@@ -1,0 +1,12 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.sxu.smartpicture">
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <application>
+        <activity android:name=".album.ChoosePhotoActivity"
+                  android:hardwareAccelerated="true"
+            android:theme="@style/Theme.AppCompat.NoActionBar"/>
+        <activity android:name=".album.PhotoPreviewActivity"
+                  android:hardwareAccelerated="true"
+                  android:theme="@style/Theme.AppCompat.NoActionBar"/>
+    </application>
+</manifest>

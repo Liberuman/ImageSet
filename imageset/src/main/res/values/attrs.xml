@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="WrapImageView">
+        <attr name="placeHolder" format="reference"/>
+        <attr name="failureHolder" format="reference"/>
+        <attr name="overlayImageId" format="reference"/>
+        <attr name="shape">
+            <enum name="normal" value="0"/>
+            <enum name="circle" value="1"/>
+            <enum name="round" value="2"/>
+        </attr>
+        <attr name="radius" format="dimension"/>
+        <attr name="topLeftRadius" format="dimension"/>
+        <attr name="topRightRadius" format="dimension"/>
+        <attr name="bottomLeftRadius" format="dimension"/>
+        <attr name="bottomRightRadius" format="dimension"/>
+        <attr name="shapeBorderWidth" format="dimension"/>
+        <attr name="borderColor" format="color"/>
+        <attr name="isBlur" format="boolean"/>
+        <attr name="blurRadius" format="integer"/>
+    </declare-styleable>
+</resources>
