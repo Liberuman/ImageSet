@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
+import android.os.StrictMode;
 import android.provider.MediaStore;
 
 import java.io.File;
@@ -52,19 +53,22 @@ public class ChoosePhotoManager {
 		Date date = new Date();
 		String fileName = "IMG_" + new SimpleDateFormat("yyyyMMddHHmmss").format(date);
 		File imageFile = new File(activity.getExternalCacheDir() + "" + fileName);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-			try {
-				ContentValues values = new ContentValues(1);
-				values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpg");
-				values.put(MediaStore.Images.Media.DATA, imageFile.getPath());
-				iconUri = activity.getContentResolver()
-						.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		} else {
-			iconUri = Uri.fromFile(imageFile);
-		}
+//		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//			try {
+//				ContentValues values = new ContentValues(1);
+//				values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpg");
+//				values.put(MediaStore.Images.Media.DATA, imageFile.getPath());
+//				iconUri = activity.getContentResolver()
+//						.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//		} else {
+//			iconUri = Uri.fromFile(imageFile);
+//		}
+		StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+		StrictMode.setVmPolicy(builder.build());
+		iconUri = Uri.fromFile(imageFile);
 		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 		intent.putExtra(MediaStore.EXTRA_OUTPUT, iconUri);
 		activity.startActivityForResult(intent, REQUEST_CODE_TAKE_PHOTO);
@@ -93,6 +97,16 @@ public class ChoosePhotoManager {
 	public void onActivityResult(Activity activity, int requestCode, Intent intent) {
 		if(intent != null) {
 			switch (requestCode) {
+				case REQUEST_CODE_TAKE_PHOTO:
+					if (requestCode == REQUEST_CODE_TAKE_PHOTO) {
+						if (autoCrop && iconUri != null) {
+							cropPhoto(activity, iconUri);
+						}
+						if (listener != null) {
+							listener.choosePhotoFromCamera(iconUri, iconUri != null ? "Succeed!" : "Failed!");
+						}
+					}
+					break;
 				case REQUEST_CODE_CHOOSE_IMAGE:
 					iconUri = intent.getData();
 					if (autoCrop && iconUri != null) {

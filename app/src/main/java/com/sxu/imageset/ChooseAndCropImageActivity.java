@@ -57,20 +57,26 @@ public class ChooseAndCropImageActivity extends AppCompatActivity {
 						ChoosePhotoManager.getInstance().setChoosePhotoListener(new OnChoosePhotoListener() {
 							@Override
 							public void choosePhotoFromAlbum(Uri uri, String errMsg) {
-								filePath = uri.getPath();
-								imageView.setImageURI(uri);
+								if (uri != null) {
+									filePath = uri.getPath();
+									imageView.setImageURI(uri);
+								}
 							}
 
 							@Override
 							public void choosePhotoFromCamera(Uri uri, String errMsg) {
-								filePath = uri.getPath();
-								imageView.setImageURI(uri);
+								if (uri != null) {
+									filePath = uri.getPath();
+									imageView.setImageURI(uri);
+								}
 							}
 
 							@Override
 							public void cropPhoto(Uri uri, String errMsg) {
-								filePath = uri.getPath();
-								imageView.setImageURI(uri);
+								if (uri != null) {
+									filePath = uri.getPath();
+									imageView.setImageURI(uri);
+								}
 							}
 						});
 					}
