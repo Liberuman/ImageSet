@@ -3,6 +3,7 @@ package com.sxu.imageset;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -16,6 +17,7 @@ import com.qiniu.android.http.ResponseInfo;
 import com.sxu.smartpicture.choosePicture.ChoosePhotoDialog;
 import com.sxu.smartpicture.choosePicture.ChoosePhotoManager;
 import com.sxu.smartpicture.choosePicture.OnChoosePhotoListener;
+import com.sxu.smartpicture.utils.PermissionUtil;
 import com.sxu.smartpicture.utils.UploadUtils;
 
 import org.json.JSONObject;
@@ -56,7 +58,7 @@ public class ChooseAndCropImageActivity extends AppCompatActivity {
 						}
 						ChoosePhotoManager.getInstance().setChoosePhotoListener(new OnChoosePhotoListener() {
 							@Override
-							public void choosePhotoFromAlbum(Uri uri, String errMsg) {
+							public void choosePhotoFromAlbum(Uri uri) {
 								if (uri != null) {
 									filePath = uri.getPath();
 									imageView.setImageURI(uri);
@@ -64,7 +66,7 @@ public class ChooseAndCropImageActivity extends AppCompatActivity {
 							}
 
 							@Override
-							public void choosePhotoFromCamera(Uri uri, String errMsg) {
+							public void choosePhotoFromCamera(Uri uri) {
 								if (uri != null) {
 									filePath = uri.getPath();
 									imageView.setImageURI(uri);
@@ -72,7 +74,7 @@ public class ChooseAndCropImageActivity extends AppCompatActivity {
 							}
 
 							@Override
-							public void cropPhoto(Uri uri, String errMsg) {
+							public void cropPhoto(Uri uri) {
 								if (uri != null) {
 									filePath = uri.getPath();
 									imageView.setImageURI(uri);
@@ -124,10 +126,15 @@ public class ChooseAndCropImageActivity extends AppCompatActivity {
 		});
 	}
 
-
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		ChoosePhotoManager.getInstance().onActivityResult(this, requestCode, data);
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+		PermissionUtil.requestCallback(this, requestCode, permissions, grantResults);
 	}
 }

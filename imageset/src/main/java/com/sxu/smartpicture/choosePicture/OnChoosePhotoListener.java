@@ -13,21 +13,18 @@ public interface OnChoosePhotoListener {
 	/**
 	 * 从相册选择图片
 	 * @param uri   uri != null表示成功，否则表示失败
-	 * @param errMsg
 	 */
-	void choosePhotoFromAlbum(Uri uri, String errMsg);
+	void choosePhotoFromAlbum(Uri uri);
 
 	/**
 	 * 拍照
 	 * @param uri
-	 * @param errMsg
 	 */
-	void choosePhotoFromCamera(Uri uri, String errMsg);
+	void choosePhotoFromCamera(Uri uri);
 
 	/**
 	 * 裁剪图片
 	 * @param uri
-	 * @param errMsg
 	 */
-	void cropPhoto(Uri uri, String errMsg);
+	void cropPhoto(Uri uri);
 }

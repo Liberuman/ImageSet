@@ -118,7 +118,7 @@ public class ChoosePhotoDialog extends AlertDialog {
             TextView textView = new TextView(getContext());
             textView.setTextSize(textSize);
             AbsListView.LayoutParams params = new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                    150);
+                    (int) (Resources.getSystem().getDisplayMetrics().density * 50));
             textView.setLayoutParams(params);
             textView.setGravity(Gravity.CENTER);
             textView.setText(items[position]);
