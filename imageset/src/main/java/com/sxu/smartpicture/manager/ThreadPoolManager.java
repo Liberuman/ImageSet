@@ -14,13 +14,13 @@ import java.util.concurrent.atomic.AtomicInteger;
  * <p>
  * Description:
  * <p>
- * Author: juhg
+ * Author: Freeman
  * <p>
  * Version: v1.0
  * <p>
  * Date: 16/11/8
  * <p>
- * Copyright: all rights reserved by zhinanmao.
+ * Copyright: all rights reserved by Freeman.
  *******************************************************************************/
 public class ThreadPoolManager {
 

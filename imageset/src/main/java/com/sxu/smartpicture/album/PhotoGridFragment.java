@@ -120,7 +120,6 @@ public class PhotoGridFragment extends Fragment {
                     final ImageView checkIcon = (ImageView) holder.getView(R.id.check_box);
                     ImageLoaderManager.getInstance().displayImage("file://" + params, photoIcon);
                     photoIcon.setLayoutParams(itemParams);
-                    Log.i("out", "selected===" + ((ChoosePhotoActivity)getActivity()).selectedPhotos.size());
                     if (((ChoosePhotoActivity)getActivity()).selectedPhotos.contains(params)) {
                         checkIcon.setSelected(true);
                     } else {

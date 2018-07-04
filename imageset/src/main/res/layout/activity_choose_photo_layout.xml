@@ -17,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="所有照片"
+            android:text="@string/all_photo"
             android:textSize="18sp"
             android:textColor="@android:color/white"/>
         <TextView
@@ -29,7 +29,7 @@
             android:layout_alignParentRight="true"
             android:gravity="center_vertical"
             android:visibility="visible"
-            android:text="取消"
+            android:text="@string/cancel"
             android:textSize="15sp"
             android:textColor="@android:color/white"/>
         <ImageView
@@ -67,7 +67,7 @@
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
             android:gravity="right|center_vertical"
-            android:text="完成"
+            android:text="@string/complete"
             android:textSize="14dp"
             android:textColor="#33cccc"/>
     </LinearLayout>

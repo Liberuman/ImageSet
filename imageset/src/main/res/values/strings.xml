@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">SmartPicture</string>
+
+    <string name="go_to_setting">去设置</string>
+    <string name="photo_text">照片</string>
+    <string name="preview_photo">预览照片</string>
+    <string name="all_photo">所有照片</string>
+    <string name="cancel">取消</string>
+    <string name="complete">完成</string>
+    <string name="complete_text">完成(%d)</string>
+    <string name="max_select_count">你最多可以选择%d张照片</string>
+    <string name="camera_permission_desc">此应用需要获取相机使用\n权限，才能提供拍照功能</string>
+    <string name="camera_permission_setting_desc">要使用相机功能，请在权限管理中开启相机权限</string>
+    <string name="read_storage_permission_desc">此功能需要获取读取存储卡\n权限，才能查看照片</string>
+    <string name="read_storage_permission_setting_desc">请在权限管理中开启读取存储卡权限</string>
+    <string name="permission_setting">无法打开应用详情，请手动去开启权限~</string>
 </resources>

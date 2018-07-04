@@ -25,13 +25,13 @@ import java.util.List;
  * <p>
  * Description:
  * <p>
- * Author: juhg
+ * Author: Freeman
  * <p>
  * Version: v1.0
  * <p>
  * Date: 16/10/19
  * <p>
- * Copyright: all rights reserved by zhinanmao.
+ * Copyright: all rights reserved by Freeman.
  *******************************************************************************/
 
 public class ChoosePhotoDialog extends AlertDialog {

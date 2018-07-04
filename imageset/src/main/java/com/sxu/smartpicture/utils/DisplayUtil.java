@@ -6,7 +6,7 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 
 /**
- * Copyright (c) 2017. zhinanmao Inc. All rights reserved.
+ * Copyright (c) 2017. Freeman Inc. All rights reserved.
  *
  * 屏幕相关的工具类
  *

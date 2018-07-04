@@ -12,6 +12,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
+import com.sxu.smartpicture.R;
+
 /*******************************************************************************
  * Description: 动态申请权限
  *
@@ -19,7 +21,7 @@ import android.widget.Toast;
  *
  * Date: 2018/6/8
  *
- * Copyright: all rights reserved by ZhiNanMao.
+ * Copyright: all rights reserved by Freeman.
  *******************************************************************************/
 
 public class PermissionUtil {
@@ -54,37 +56,42 @@ public class PermissionUtil {
 	}
 
 	public static void requestCallback(final Activity context, int requestCode, String permissions[], int[] grantResults) {
-		if (requestCode == PERMISSION_REQUEST_CODE) {
-			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-				if (requestListener != null) {
-					requestListener.onGranted();
-					requestListener = null;
-				}
+		if (requestCode != PERMISSION_REQUEST_CODE) {
+			return;
+		}
+
+		if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+			if (requestListener != null) {
+				requestListener.onGranted();
+				requestListener = null;
+			}
+		} else {
+			if (ActivityCompat.shouldShowRequestPermissionRationale(context,
+					permissions != null && permissions.length > 0 ? permissions[0] : "")) {
+				Toast.makeText(context, permissionDesc, Toast.LENGTH_LONG).show();
 			} else {
-				if (ActivityCompat.shouldShowRequestPermissionRationale(context,
-						permissions != null && permissions.length > 0 ? permissions[0] : "")) {
-					Toast.makeText(context, permissionDesc, Toast.LENGTH_LONG).show();
-				} else {
-					new AlertDialog.Builder(context)
-						.setMessage(permissionSettingDesc)
-						.setNegativeButton("去设置", new DialogInterface.OnClickListener() {
+				showSettingPermissionDialog(context);
+			}
+		}
+	}
+
+	private static void showSettingPermissionDialog(final Context context) {
+		new AlertDialog.Builder(context, android.R.style.Theme_Holo_Light_Dialog)
+				.setMessage(permissionSettingDesc)
+				.setNegativeButton(context.getString(R.string.go_to_setting),
+						new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
-								try {
-									Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-									intent.setData(Uri.fromParts("package", context.getPackageName(), null));
-									if (intent.resolveActivity(context.getPackageManager()) != null) {
-										context.startActivity(intent);
-									}
-								} catch (Exception e) {
-									e.printStackTrace(System.out);
+								Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+								intent.setData(Uri.fromParts("package", context.getPackageName(), null));
+								if (intent.resolveActivity(context.getPackageManager()) != null) {
+									context.startActivity(intent);
+								} else {
+									Toast.makeText(context, context.getString(R.string.permission_setting), Toast.LENGTH_LONG).show();
 								}
 							}
 						})
-						.show();
-				}
-			}
-		}
+				.show();
 	}
 
 	public static void setPermissionRequestListener(String desc, String settingDesc, OnPermissionRequestListener listener) {

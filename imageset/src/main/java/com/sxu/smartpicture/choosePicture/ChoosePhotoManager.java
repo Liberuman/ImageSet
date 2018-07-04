@@ -61,8 +61,8 @@ public class ChoosePhotoManager {
 	public void choosePhotoFromCamera(final Activity activity) {
 		if (!PermissionUtil.checkPermission(activity, Manifest.permission.CAMERA)) {
 			PermissionUtil.setPermissionRequestListener(
-					"此应用需要获取相机使用\n权限，才能提供拍照功能",
-					"要使用相机功能，请在权限管理中开启相机权限",
+					activity.getResources().getString(R.string.camera_permission_desc),
+					activity.getResources().getString(R.string.camera_permission_setting_desc),
 					new PermissionUtil.OnPermissionRequestListener() {
 				@Override
 				public void onGranted() {

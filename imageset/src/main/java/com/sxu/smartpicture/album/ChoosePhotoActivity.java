@@ -3,6 +3,7 @@ package com.sxu.smartpicture.album;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 import com.sxu.smartpicture.R;
 import com.sxu.smartpicture.imageloader.GlideInstance;
 import com.sxu.smartpicture.imageloader.ImageLoaderManager;
+import com.sxu.smartpicture.utils.PermissionUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +69,7 @@ public class ChoosePhotoActivity extends AppCompatActivity {
         List<String> photoList = getIntent().getStringArrayListExtra(PhotoPicker.SELECTED_PHOTOS);
         if (photoList != null && photoList.size() > 0) {
             selectedPhotos.addAll(photoList);
-            completeText.setText("完成(" + photoList.size() + ")");
+            completeText.setText(getString(R.string.complete_text, photoList.size()));
         }
         updateFragment(PhotoGridFragment.newInstance(0), FRAGMENT_TAG_GRID, true, false);
 
@@ -173,31 +175,31 @@ public class ChoosePhotoActivity extends AppCompatActivity {
                 checkIcon.setSelected(true);
                 selectedPhotos.add(photoPath);
             } else {
-                Toast.makeText(ChoosePhotoActivity.this, "你最多可以选择"
-                        + maxCount + "张照片", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ChoosePhotoActivity.this, getString(R.string.max_select_count, maxCount),
+                        Toast.LENGTH_SHORT).show();
             }
         } else if (!isSelected && selectedPhotos.contains(photoPath)) {
             checkIcon.setSelected(false);
             selectedPhotos.remove(photoPath);
         }
-        completeText.setText("完成(" + selectedPhotos.size() + ")");
+        completeText.setText(getString(R.string.complete_text, selectedPhotos.size()));
     }
 
     public void updateViewVisible(String tag) {
         if (FRAGMENT_TAG_GRID.equals(tag)) {
-            titleText.setText("所有照片");
+            titleText.setText(getString(R.string.all_photo));
             returnIcon.setVisibility(View.VISIBLE);
             cancelText.setVisibility(View.VISIBLE);
             checkIcon.setVisibility(View.GONE);
             completeLayout.setVisibility(View.VISIBLE);
         } else if (FRAGMENT_TAG_LIST.equals(tag)) {
-            titleText.setText("照片");
+            titleText.setText(getString(R.string.photo_text));
             returnIcon.setVisibility(View.GONE);
             cancelText.setVisibility(View.VISIBLE);
             checkIcon.setVisibility(View.GONE);
             completeLayout.setVisibility(View.GONE);
         } else if (FRAGMENT_TAG_PREVIEW.equals(tag)) {
-            titleText.setText("预览照片");
+            titleText.setText(getString(R.string.preview_photo));
             returnIcon.setVisibility(View.VISIBLE);
             cancelText.setVisibility(View.GONE);
             checkIcon.setVisibility(View.VISIBLE);
@@ -207,6 +209,12 @@ public class ChoosePhotoActivity extends AppCompatActivity {
              * Nothing
              */
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        PermissionUtil.requestCallback(this, requestCode, permissions, grantResults);
     }
 
     @Override

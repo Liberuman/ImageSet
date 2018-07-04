@@ -1,5 +1,6 @@
 package com.sxu.smartpicture.album;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -10,6 +11,10 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.text.TextUtils;
+import android.widget.Toast;
+
+import com.sxu.smartpicture.R;
+import com.sxu.smartpicture.utils.PermissionUtil;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -40,11 +45,11 @@ public class PhotoManager {
 	}
 
 	/**
-	 * 获取所有的相册信息
+	 * 载入所有的相册信息
 	 * @param context
 	 * @param listener
 	 */
-	public void getAllDirectory(final FragmentActivity context, final OnPhotoDirectoryLoadListener listener ) {
+	private void loadAllDirectory(final FragmentActivity context, final OnPhotoDirectoryLoadListener listener) {
 		context.getSupportLoaderManager().initLoader(0, null, new LoaderManager.LoaderCallbacks<Cursor>() {
 			@Override
 			public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -93,12 +98,33 @@ public class PhotoManager {
 	}
 
 	/**
-	 * 根据相册ID获取指定相册的照片
+	 * 获取所有的相册信息
+	 * @param context
+	 * @param listener
+	 */
+	public void getAllDirectory(final FragmentActivity context, final OnPhotoDirectoryLoadListener listener ) {
+		if (!PermissionUtil.checkPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+			PermissionUtil.setPermissionRequestListener(
+					context.getString(R.string.read_storage_permission_desc),
+					context.getString(R.string.read_storage_permission_setting_desc),
+					new PermissionUtil.OnPermissionRequestListener() {
+						@Override
+						public void onGranted() {
+							loadAllDirectory(context, listener);
+						}
+					});
+		} else {
+			loadAllDirectory(context, listener);
+		}
+	}
+
+	/**
+	 * 载入指定相册下的所有照片
 	 * @param context
 	 * @param bucketId
 	 * @param listener
 	 */
-	public static void getPhotos(final FragmentActivity context, final String bucketId, final OnPhotoLoadListener listener ) {
+	private static void loadPhotos(final FragmentActivity context, final String bucketId, final OnPhotoLoadListener listener ) {
 		context.getSupportLoaderManager().initLoader(0, null, new LoaderManager.LoaderCallbacks<Cursor>() {
 			@Override
 			public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -142,11 +168,33 @@ public class PhotoManager {
 	}
 
 	/**
-	 * 获取所有的照片
+	 * 根据相册ID获取指定相册的照片
+	 * @param context
+	 * @param bucketId
+	 * @param listener
+	 */
+	public static void getPhotos(final FragmentActivity context, final String bucketId, final OnPhotoLoadListener listener ) {
+		if (!PermissionUtil.checkPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+			PermissionUtil.setPermissionRequestListener(
+					context.getString(R.string.read_storage_permission_desc),
+					context.getString(R.string.read_storage_permission_setting_desc),
+					new PermissionUtil.OnPermissionRequestListener() {
+						@Override
+						public void onGranted() {
+							loadPhotos(context, bucketId, listener);
+						}
+					});
+		} else {
+			loadPhotos(context, bucketId, listener);
+		}
+	}
+
+	/**
+	 * 载入手机中的所有照片
 	 * @param context
 	 * @param listener
 	 */
-	public void getAllPhotos(final FragmentActivity context, final OnPhotoDirectoryLoadListener listener) {
+	private void loadAllPhotos(final FragmentActivity context, final OnPhotoDirectoryLoadListener listener) {
 		if (directoryMap != null) {
 			if (listener != null) {
 				listener.onCompleted(new ArrayList<>(directoryMap.values()));
@@ -176,7 +224,7 @@ public class PhotoManager {
 							data.moveToPosition(-1);
 						}
 						PhotoDirectoryBean allPhotoDirectory = new PhotoDirectoryBean();
-						allPhotoDirectory.name = "所有照片";
+						allPhotoDirectory.name = context.getString(R.string.all_photo);
 						directoryMap.put("All", allPhotoDirectory);
 						while (data.moveToNext()) {
 							PhotoDirectoryBean directory;
@@ -209,6 +257,28 @@ public class PhotoManager {
 
 				}
 			});
+		}
+	}
+
+
+	/**
+	 * 获取所有的照片
+	 * @param context
+	 * @param listener
+	 */
+	public void getAllPhotos(final FragmentActivity context, final OnPhotoDirectoryLoadListener listener) {
+		if (!PermissionUtil.checkPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+			PermissionUtil.setPermissionRequestListener(
+					context.getString(R.string.read_storage_permission_desc),
+					context.getString(R.string.read_storage_permission_setting_desc),
+					new PermissionUtil.OnPermissionRequestListener() {
+						@Override
+						public void onGranted() {
+							loadAllPhotos(context, listener);
+						}
+					});
+		} else {
+			loadAllPhotos(context, listener);
 		}
 	}
 

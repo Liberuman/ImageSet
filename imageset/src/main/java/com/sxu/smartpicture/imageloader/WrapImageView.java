@@ -155,27 +155,4 @@ public class WrapImageView extends GenericDraweeView {
 	public int getBlurRadius() {
 		return mBlurRadius;
 	}
-
-//	@Override
-//	public int hashCode() {
-//		return super.hashCode();
-//	}
-//
-//	@Override
-//	public boolean equals(Object obj) {
-//		if (this == obj) {
-//			return true;
-//		} else {
-//			return obj != null && obj instanceof WrapImageView
-//					&& mPlaceHolder == ((WrapImageView) obj).mPlaceHolder
-//					&& mFailureHolder == ((WrapImageView) obj).mFailureHolder
-//					&& mShape == ((WrapImageView) obj).mShape
-//					&& mRadius == ((WrapImageView) obj).mRadius
-//					&& mBorderWidth == ((WrapImageView) obj).mBorderWidth
-//					&& mBorderColor == ((WrapImageView) obj).mBorderColor
-//					&& mOverlayImageId == ((WrapImageView) obj).mOverlayImageId;
-//		}
-//
-//		// TODO: 2017/12/14  Android系统未对View重写equals方法，采用其他方式来比较配置项
-//	}
 }
