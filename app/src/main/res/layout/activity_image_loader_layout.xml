@@ -12,8 +12,8 @@
         android:layout_marginLeft="18dp"
         android:layout_marginRight="18dp"
         android:scaleType="centerCrop"
-        app:placeHolder="@drawable/ic_launcher"
-        app:failureHolder="@drawable/ic_launcher"/>
+        app:placeHolder="@drawable/default_placeholder_image"
+        app:failureHolder="@drawable/default_placeholder_image"/>
     <com.sxu.smartpicture.imageloader.WrapImageView
         android:id="@+id/blur_image"
         android:layout_width="match_parent"
@@ -24,8 +24,8 @@
         android:scaleType="centerCrop"
         app:isBlur="true"
         app:blurRadius="25"
-        app:placeHolder="@drawable/ic_launcher"
-        app:failureHolder="@drawable/ic_launcher"/>
+        app:placeHolder="@drawable/default_placeholder_image"
+        app:failureHolder="@drawable/default_placeholder_image"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="100dp"
@@ -38,8 +38,8 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            app:placeHolder="@drawable/ic_launcher"
-            app:failureHolder="@drawable/ic_launcher"
+            app:placeHolder="@drawable/default_placeholder_image"
+            app:failureHolder="@drawable/default_placeholder_image"
             app:shape="round"
             app:radius="10dp"
             app:borderColor="#e1f5fe"
@@ -50,8 +50,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:layout_marginLeft="20dp"
-            app:placeHolder="@drawable/ic_launcher"
-            app:failureHolder="@drawable/ic_launcher"
+            app:placeHolder="@drawable/default_placeholder_image"
+            app:failureHolder="@drawable/default_placeholder_image"
             app:shape="circle"
             app:borderColor="#e1f5fe"
             app:shapeBorderWidth="5dp"/>
