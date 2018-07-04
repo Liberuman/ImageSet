@@ -6,3 +6,19 @@
 - 上传图片到服务器；
 - 上传图片到七牛；
 
+### 添加依赖
+
+在项目的build.gradle中添加：
+
+    allprojects {
+      repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+      }
+    }
+
+在APP模块下的build.gradle中添加依赖：
+
+	dependencies {
+	        implementation 'com.github.JuHonggang:ImageSet:v0.1'
+	}
