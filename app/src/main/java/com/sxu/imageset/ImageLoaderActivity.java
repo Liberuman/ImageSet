@@ -7,12 +7,13 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.sxu.smartpicture.imageloader.FrescoInstance;
-import com.sxu.smartpicture.imageloader.GlideInstance;
-import com.sxu.smartpicture.imageloader.ImageLoaderListener;
-import com.sxu.smartpicture.imageloader.ImageLoaderManager;
-import com.sxu.smartpicture.imageloader.UILInstance;
-import com.sxu.smartpicture.imageloader.WrapImageView;
+import com.sxu.imageloader.FrescoInstance;
+import com.sxu.imageloader.GlideInstance;
+import com.sxu.imageloader.ImageLoaderListener;
+import com.sxu.imageloader.ImageLoaderManager;
+import com.sxu.imageloader.UILInstance;
+import com.sxu.imageloader.WrapImageView;
+
 
 /**
  * @author Freeman

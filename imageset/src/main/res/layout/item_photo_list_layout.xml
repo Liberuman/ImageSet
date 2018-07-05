@@ -6,7 +6,7 @@
     android:paddingLeft="24dp"
     android:paddingTop="12dp"
     android:paddingBottom="12dp">
-    <com.sxu.smartpicture.imageloader.WrapImageView
+    <com.sxu.imageloader.WrapImageView
         android:id="@+id/directory_icon"
         android:layout_width="60dp"
         android:layout_height="60dp"

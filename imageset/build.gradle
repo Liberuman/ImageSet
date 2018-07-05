@@ -29,7 +29,6 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:27.0.2'
     testCompile 'junit:junit:4.12'
     androidTestCompile('com.android.support.test.espresso:espresso-core:3.0.1', {
@@ -41,6 +40,6 @@ dependencies {
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     implementation 'com.github.bumptech.glide:glide:4.4.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.4.0'
-    implementation files('libs/renderscript-v8.jar')
     compile 'com.qiniu:qiniu-android-sdk:7.3.+'
+    compile 'com.github.JuHonggang:ImageloaderManager:v0.14'
 }

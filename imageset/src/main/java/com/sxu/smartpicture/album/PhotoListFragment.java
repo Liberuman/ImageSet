@@ -11,9 +11,9 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.sxu.imageloader.ImageLoaderManager;
+import com.sxu.imageloader.WrapImageView;
 import com.sxu.smartpicture.R;
-import com.sxu.smartpicture.imageloader.ImageLoaderManager;
-import com.sxu.smartpicture.imageloader.WrapImageView;
 
 import java.io.File;
 import java.util.ArrayList;

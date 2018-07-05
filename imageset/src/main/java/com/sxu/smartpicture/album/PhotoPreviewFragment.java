@@ -13,10 +13,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.sxu.imageloader.ImageLoaderManager;
+import com.sxu.imageloader.WrapImageView;
 import com.sxu.smartpicture.utils.DisplayUtil;
 import com.sxu.smartpicture.R;
-import com.sxu.smartpicture.imageloader.ImageLoaderManager;
-import com.sxu.smartpicture.imageloader.WrapImageView;
 
 import java.util.ArrayList;
 

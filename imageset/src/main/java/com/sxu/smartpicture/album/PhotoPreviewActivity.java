@@ -4,9 +4,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
+import com.sxu.imageloader.ImageLoaderManager;
+import com.sxu.imageloader.WrapImageView;
 import com.sxu.smartpicture.R;
-import com.sxu.smartpicture.imageloader.ImageLoaderManager;
-import com.sxu.smartpicture.imageloader.WrapImageView;
 
 /**
  * @author Freeman
