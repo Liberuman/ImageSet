@@ -6,6 +6,8 @@
 - 上传图片到服务器；
 - 上传图片到七牛；
 
+详细介绍参考：http://tinycoder.cc/2017/12/20/%E7%AE%80%E5%8D%95%20%E5%BC%BA%E5%A4%A7%E7%9A%84%E5%9B%BE%E7%89%87%E5%BA%93%E6%93%8D%E4%BD%9C%E5%BA%93/
+
 ### 添加依赖
 
 在项目的build.gradle中添加：
@@ -20,7 +22,7 @@
 在APP模块下的build.gradle中添加依赖：
 
 	dependencies {
-	        implementation 'com.github.JuHonggang:ImageSet:v0.11'
+	        implementation 'com.github.JuHonggang:ImageSet:v0.12'
 	}
 
 ### License
