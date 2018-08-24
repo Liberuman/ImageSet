@@ -37,11 +37,11 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     //implementation files('libs/qiniu-android-sdk-7.1.2.jar')
+//    compile 'com.facebook.fresco:fresco:1.1.0'
+//    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+//    implementation 'com.github.bumptech.glide:glide:4.4.0'
+//    annotationProcessor 'com.github.bumptech.glide:compiler:4.4.0'
     compile 'top.zibin:Luban:1.1.3'
-    compile 'com.facebook.fresco:fresco:1.1.0'
-    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
-    implementation 'com.github.bumptech.glide:glide:4.4.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.4.0'
     compile 'com.qiniu:qiniu-android-sdk:7.3.+'
     compile 'com.github.JuHonggang:ImageloaderManager:v0.14'
 }

@@ -132,6 +132,7 @@ public class PhotoGridFragment extends Fragment {
                             if (previewListener != null) {
                                 previewListener.onItemPreview(holder.getPosition(), photoIcon, allPhotoPaths);
                             }
+                            //PhotoPreviewActivity.enter(getActivity(), photoIcon, holder.getPosition(), allPhotoPaths);
                         }
                     });
 

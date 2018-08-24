@@ -12,7 +12,6 @@
                   android:hardwareAccelerated="true"
             android:theme="@style/Theme.AppCompat.NoActionBar"/>
         <activity android:name=".album.PhotoPreviewActivity"
-                  android:hardwareAccelerated="true"
-                  android:theme="@style/Theme.AppCompat.NoActionBar"/>
+                  android:theme="@style/PreviewPhotoTheme"/>
     </application>
 </manifest>
