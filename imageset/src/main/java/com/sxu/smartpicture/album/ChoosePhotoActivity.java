@@ -17,8 +17,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.sxu.imageloader.GlideInstance;
 import com.sxu.imageloader.ImageLoaderManager;
+import com.sxu.imageloader.instance.GlideInstance;
 import com.sxu.smartpicture.R;
 import com.sxu.smartpicture.utils.PermissionUtil;
 

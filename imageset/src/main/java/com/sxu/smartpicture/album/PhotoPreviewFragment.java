@@ -15,9 +15,9 @@ import android.widget.ImageView;
 
 import com.sxu.imageloader.ImageLoaderManager;
 import com.sxu.imageloader.WrapImageView;
+import com.sxu.smartpicture.photoview.PhotoView;
 import com.sxu.smartpicture.utils.DisplayUtil;
 import com.sxu.smartpicture.R;
-import com.sxu.smartpicture.view.ZoomImageView;
 
 import java.util.ArrayList;
 
@@ -112,7 +112,7 @@ public class PhotoPreviewFragment extends Fragment {
 		@NonNull
 		@Override
 		public Object instantiateItem(@NonNull ViewGroup container, int position) {
-			ZoomImageView imageView = new ZoomImageView(getActivity());
+			PhotoView imageView = new PhotoView(getActivity());
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 				imageView.setTransitionName("Preview" + position);
 			}

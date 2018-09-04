@@ -1,18 +1,28 @@
 package com.sxu.imageset;
 
+import android.app.SharedElementCallback;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.sxu.imageloader.FrescoInstance;
-import com.sxu.imageloader.GlideInstance;
-import com.sxu.imageloader.ImageLoaderListener;
 import com.sxu.imageloader.ImageLoaderManager;
-import com.sxu.imageloader.UILInstance;
 import com.sxu.imageloader.WrapImageView;
+import com.sxu.imageloader.instance.FrescoInstance;
+import com.sxu.imageloader.instance.GlideInstance;
+import com.sxu.imageloader.instance.UILInstance;
+import com.sxu.imageloader.listener.ImageLoaderListener;
+import com.sxu.smartpicture.album.PhotoPreviewActivity;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -22,6 +32,10 @@ import com.sxu.imageloader.WrapImageView;
 
 
 public class ImageLoaderActivity extends AppCompatActivity {
+
+	private WrapImageView image;
+	private WrapImageView blurImage;
+	private WrapImageView rectangleImage;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -47,11 +61,26 @@ public class ImageLoaderActivity extends AppCompatActivity {
 			 */
 		}
 
+		ViewCompat.setTransitionName(image, PhotoPreviewActivity.TRANSITION_NAME_PREFIX + "0");
+		ViewCompat.setTransitionName(blurImage, PhotoPreviewActivity.TRANSITION_NAME_PREFIX + "1");
+		ViewCompat.setTransitionName(rectangleImage, PhotoPreviewActivity.TRANSITION_NAME_PREFIX + "2");
 		ImageLoaderManager.getInstance().displayImage("http://t.cn/RTRKzUt", image);
 		ImageLoaderManager.getInstance().displayImage("http://img.tuku.cn/file_thumb/201602/m2016021513470744.jpg", blurImage);
 		ImageLoaderManager.getInstance().displayImage("http://t.cn/RTRKzUt", rectangleImage);
 		ImageLoaderManager.getInstance().displayImage("http://t.cn/RTRKJvS", circleImage);
 
+
+		//ViewCompat.setTransitionName(image, PhotoPreviewActivity.TRANSITION_NAME_PREFIX + "0");
+		image.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				List<String> photoList = new ArrayList<>();
+				photoList.add("http://t.cn/RTRKzUt");
+				photoList.add("http://img.tuku.cn/file_thumb/201602/m2016021513470744.jpg");
+				photoList.add("http://t.cn/RTRKzUt");
+				PhotoPreviewActivity.enter(ImageLoaderActivity.this, v, 0, photoList);
+			}
+		});
 		downloadText.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -92,4 +121,24 @@ public class ImageLoaderActivity extends AppCompatActivity {
 		// 这里只是为了测试需要，使用时不需要调用
 		ImageLoaderManager.getInstance().onDestroy();
 	}
+
+//	@Override
+//	public void onActivityReenter(int resultCode, Intent data) {
+//		if (resultCode == RESULT_OK && data != null) {
+//			final int currentIndex = data.getIntExtra("currentIndex", 0);
+//			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//				setExitSharedElementCallback(new SharedElementCallback() {
+//					@Override
+//					public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
+//						super.onMapSharedElements(names, sharedElements);
+//						names.clear();
+//						sharedElements.clear();
+//						names.add(PhotoPreviewActivity.TRANSITION_NAME_PREFIX + currentIndex);
+//						sharedElements.put(PhotoPreviewActivity.TRANSITION_NAME_PREFIX + currentIndex, blurImage);
+//					}
+//				});
+//			}
+//		}
+//		super.onActivityReenter(resultCode, data);
+//	}
 }
