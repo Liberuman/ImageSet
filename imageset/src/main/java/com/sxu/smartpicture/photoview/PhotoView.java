@@ -16,13 +16,25 @@
 package com.sxu.smartpicture.photoview;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.RectF;
+import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.controller.BaseControllerListener;
+import com.facebook.drawee.drawable.ScalingUtils;
+import com.facebook.drawee.interfaces.DraweeController;
+import com.facebook.drawee.view.GenericDraweeView;
+import com.facebook.drawee.view.SimpleDraweeView;
+import com.facebook.imagepipeline.image.ImageInfo;
 import com.sxu.imageloader.WrapImageView;
 
 /**
@@ -51,11 +63,22 @@ public class PhotoView extends WrapImageView {
         attacher = new PhotoViewAttacher(this);
         //We always pose as a Matrix scale type, though we can change to another scale type
         //via the attacher
-        super.setScaleType(ScaleType.MATRIX);
         //apply the previously applied scale type
+        super.setScaleType(ScaleType.MATRIX);
         if (pendingScaleType != null) {
             setScaleType(pendingScaleType);
             pendingScaleType = null;
+        }
+    }
+
+    @Override protected void onDraw(@NonNull Canvas canvas) {
+        if (this instanceof GenericDraweeView) {
+            int saveCount = canvas.save();
+            canvas.concat(attacher.getSuppMatrix());
+            super.onDraw(canvas);
+            canvas.restoreToCount(saveCount);
+        } else {
+            super.onDraw(canvas);
         }
     }
 
@@ -256,13 +279,5 @@ public class PhotoView extends WrapImageView {
 
     public void setOnSingleFlingListener(OnSingleFlingListener onSingleFlingListener) {
         attacher.setOnSingleFlingListener(onSingleFlingListener);
-    }
-
-    /**
-     * 解决共享动画无效的问题
-     * @param matrix
-     */
-    public void animateTransform(Matrix matrix) {
-        invalidate();
     }
 }

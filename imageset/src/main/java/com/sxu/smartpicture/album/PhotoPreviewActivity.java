@@ -131,12 +131,17 @@ public class PhotoPreviewActivity extends AppCompatActivity {
 		@Override
 		public Object instantiateItem(@NonNull ViewGroup container, int position) {
 			PhotoView imageView = new PhotoView(container.getContext());
-			imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+			imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
 			ViewCompat.setTransitionName(imageView, TRANSITION_NAME_PREFIX + position);
 			ImageLoaderManager.getInstance().displayImage(photoList.get(position), imageView);
 			container.addView(imageView);
 
 			return imageView;
+		}
+
+		@Override
+		public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
+			container.removeView((View) object);
 		}
 	}
 

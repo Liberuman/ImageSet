@@ -39,5 +39,5 @@ dependencies {
 
     compile 'top.zibin:Luban:1.1.3'
     compile 'com.qiniu:qiniu-android-sdk:7.3.+'
-    compile 'com.github.JuHonggang:ImageloaderManager:0.15'
+    compile 'com.github.JuHonggang:ImageloaderManager:0.16'
 }

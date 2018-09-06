@@ -20,6 +20,7 @@ import android.graphics.Matrix;
 import android.graphics.Matrix.ScaleToFit;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,6 +32,9 @@ import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.OverScroller;
 
+import com.facebook.drawee.drawable.ScalingUtils;
+import com.facebook.drawee.view.GenericDraweeView;
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.sxu.imageloader.WrapImageView;
 
 /**
@@ -345,7 +349,7 @@ public class PhotoViewAttacher implements View.OnTouchListener,
     public boolean onTouch(View v, MotionEvent ev) {
         boolean handled = false;
 
-        if (mZoomEnabled && Util.hasDrawable((ImageView) v)) {
+        if (mZoomEnabled && Util.hasDrawable((WrapImageView) v)) {
             switch (ev.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     ViewParent parent = v.getParent();
@@ -537,7 +541,11 @@ public class PhotoViewAttacher implements View.OnTouchListener,
         matrix.set(mSuppMatrix);
     }
 
-    private Matrix getDrawMatrix() {
+    public Matrix getSuppMatrix() {
+        return mSuppMatrix;
+    }
+
+    public Matrix getDrawMatrix() {
         mDrawMatrix.set(mBaseMatrix);
         mDrawMatrix.postConcat(mSuppMatrix);
         return mDrawMatrix;
@@ -603,8 +611,13 @@ public class PhotoViewAttacher implements View.OnTouchListener,
     private RectF getDisplayRect(Matrix matrix) {
         Drawable d = mImageView.getDrawable();
         if (d != null) {
-            mDisplayRect.set(0, 0, d.getIntrinsicWidth(),
-                    d.getIntrinsicHeight());
+//            if (mImageView instanceof GenericDraweeView) {
+//                mImageView.getHierarchy().getActualImageBounds(mDisplayRect);
+//            } else {
+//                mDisplayRect.set(0, 0, d.getIntrinsicWidth(),
+//                        d.getIntrinsicHeight());
+//            }
+            mDisplayRect.set(d.getBounds());
             matrix.mapRect(mDisplayRect);
             return mDisplayRect;
         }
@@ -703,6 +716,7 @@ public class PhotoViewAttacher implements View.OnTouchListener,
                     deltaY = (viewHeight - height) / 2 - rect.top;
                     break;
             }
+            mScrollEdge = EDGE_BOTH;
         } else if (rect.top > 0) {
             deltaY = -rect.top;
         } else if (rect.bottom < viewHeight) {
@@ -738,12 +752,16 @@ public class PhotoViewAttacher implements View.OnTouchListener,
         return true;
     }
 
-    private int getImageViewWidth(ImageView imageView) {
-        return imageView.getWidth() - imageView.getPaddingLeft() - imageView.getPaddingRight();
+    private int getImageViewWidth(WrapImageView imageView) {
+        int width =  imageView.getWidth() - imageView.getPaddingLeft() - imageView.getPaddingRight();
+        Log.i("out", "width==========" + width);
+        return width;
     }
 
-    private int getImageViewHeight(ImageView imageView) {
-        return imageView.getHeight() - imageView.getPaddingTop() - imageView.getPaddingBottom();
+    private int getImageViewHeight(WrapImageView imageView) {
+        int height = imageView.getHeight() - imageView.getPaddingTop() - imageView.getPaddingBottom();
+        Log.i("out", "height==========" + height);
+        return height;
     }
 
     private void cancelFling() {
@@ -860,5 +878,17 @@ public class PhotoViewAttacher implements View.OnTouchListener,
                 Compat.postOnAnimation(mImageView, this);
             }
         }
+    }
+
+    public OnPhotoTapListener getOnPhotoTapListener() {
+        return mPhotoTapListener;
+    }
+
+    public OnViewTapListener getOnViewTapListener() {
+        return mViewTapListener;
+    }
+
+    public WrapImageView getView() {
+        return mImageView;
     }
 }
