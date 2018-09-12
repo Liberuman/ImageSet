@@ -21,9 +21,10 @@ import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.github.chrisbanes.photoview.PhotoView;
 import com.sxu.imageloader.ImageLoaderManager;
 import com.sxu.smartpicture.R;
-import com.sxu.smartpicture.photoview.PhotoView;
+import com.sxu.smartpicture.zoomimage.ZoomImageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -130,7 +131,7 @@ public class PhotoPreviewActivity extends AppCompatActivity {
 		@NonNull
 		@Override
 		public Object instantiateItem(@NonNull ViewGroup container, int position) {
-			PhotoView imageView = new PhotoView(container.getContext());
+			ZoomImageView imageView = new ZoomImageView(container.getContext());
 			imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
 			ViewCompat.setTransitionName(imageView, TRANSITION_NAME_PREFIX + position);
 			ImageLoaderManager.getInstance().displayImage(photoList.get(position), imageView);
