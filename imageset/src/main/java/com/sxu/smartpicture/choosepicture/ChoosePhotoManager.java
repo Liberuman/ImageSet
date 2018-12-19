@@ -1,4 +1,4 @@
-package com.sxu.smartpicture.choosePicture;
+package com.sxu.smartpicture.choosepicture;
 
 import android.Manifest;
 import android.app.Activity;
@@ -8,12 +8,9 @@ import android.net.Uri;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.provider.MediaStore;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.sxu.smartpicture.R;
-import com.sxu.smartpicture.utils.PermissionUtil;
+import com.sxu.permission.CheckPermission;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -51,6 +48,11 @@ public class ChoosePhotoManager {
 	}
 
 	public void choosePhotoFromAlbum(Activity activity) {
+		choosePhotoFromAlbum(activity, false);
+	}
+
+	public void choosePhotoFromAlbum(Activity activity, boolean autoCrop) {
+		this.autoCrop = autoCrop;
 		Intent intent = new Intent(Intent.ACTION_PICK, null);
 		intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
 		if (intent.resolveActivity(activity.getPackageManager()) != null) {
@@ -58,23 +60,13 @@ public class ChoosePhotoManager {
 		}
 	}
 
-	public void choosePhotoFromCamera(final Activity activity) {
-		if (!PermissionUtil.checkPermission(activity, Manifest.permission.CAMERA)) {
-			PermissionUtil.setPermissionRequestListener(
-					activity.getResources().getString(R.string.camera_permission_desc),
-					activity.getResources().getString(R.string.camera_permission_setting_desc),
-					new PermissionUtil.OnPermissionRequestListener() {
-				@Override
-				public void onGranted() {
-					takePicture(activity);
-				}
-			});
-		} else {
-			takePicture(activity);
-		}
+	public void takePicture(Activity activity) {
+		takePicture(activity, false);
 	}
 
-	private void takePicture(Activity activity) {
+	@CheckPermission(permissions = {Manifest.permission.CAMERA}, permissionDesc = "此功能需要相机权限才可使用")
+	public void takePicture(Activity activity, boolean autoCrop) {
+		this.autoCrop = autoCrop;
 		Date date = new Date();
 		String fileName = "IMG_" + new SimpleDateFormat("yyyyMMddHHmmss").format(date);
 		Log.i("out", "rootPath=" + Environment.getExternalStorageDirectory() + " cahce==" + activity.getCacheDir());
@@ -152,6 +144,10 @@ public class ChoosePhotoManager {
 		}
 	}
 
+	/**
+	 * 选择照片或者拍照后是否需要裁剪
+	 * @param autoCrop
+	 */
 	public void setAutoCrop(boolean autoCrop) {
 		this.autoCrop = autoCrop;
 	}

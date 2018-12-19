@@ -39,4 +39,13 @@
         android:text="上传图片到七牛"
         android:textColor="@android:color/white"
         android:background="#7986cb"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
+        android:text="说明：\n1. 上传到服务器需要设置服务器的URL；\n2. 上传到七牛云需要到token，具体参考七牛云开发者中心；"
+        android:lineSpacingMultiplier="1.25"/>
 </LinearLayout>

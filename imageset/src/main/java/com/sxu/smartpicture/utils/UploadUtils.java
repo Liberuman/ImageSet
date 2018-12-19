@@ -13,10 +13,8 @@ import org.json.JSONObject;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -26,11 +24,15 @@ import java.util.List;
 import top.zibin.luban.Luban;
 import top.zibin.luban.OnCompressListener;
 
-/**
- * @author Freeman
- * @date 2017/11/14
- */
-
+/*******************************************************************************
+ * Description: 上传图片的工具类
+ *
+ * Author: Freeman
+ *
+ * Date: 2017/11/14
+ *
+ * Copyright: all rights reserved by Freeman.
+ *******************************************************************************/
 public class UploadUtils {
 
 	public static void uploadToInnerServer(Activity context, String serverAddress, String filePath,
@@ -40,41 +42,37 @@ public class UploadUtils {
 
 	public static void uploadToInnerServer(final Activity context, final String serverAddress, final String filePath,
 	                                       final boolean needCompress, final OnUploadListener listener) {
-		if (needCompress) {
-			compressImage(context, filePath, new OnCompressListener() {
-				@Override
-				public void onStart() {
-
-				}
-
-				@Override
-				public void onSuccess(final File file) {
-					ThreadPoolManager.executeTask(new Runnable() {
-						@Override
-						public void run() {
-							uploadImage(context, serverAddress, file.getPath(), listener);
-						}
-					});
-				}
-
-				@Override
-				public void onError(Throwable e) {
-					ThreadPoolManager.executeTask(new Runnable() {
-						@Override
-						public void run() {
-							uploadImage(context, serverAddress, filePath, listener);
-						}
-					});
-				}
-			});
-		} else {
-			ThreadPoolManager.executeTask(new Runnable() {
-				@Override
-				public void run() {
-					uploadImage(context, serverAddress, filePath, listener);
-				}
-			});
+		if (!needCompress) {
+			realUploadToInnerServer(context, serverAddress, filePath, listener);
+			return;
 		}
+
+		compressImage(context, filePath, new OnCompressListener() {
+			@Override
+			public void onStart() {
+
+			}
+
+			@Override
+			public void onSuccess(final File file) {
+				realUploadToInnerServer(context, serverAddress, filePath, listener);
+			}
+
+			@Override
+			public void onError(Throwable e) {
+				realUploadToInnerServer(context, serverAddress, filePath, listener);
+			}
+		});
+	}
+
+	private static void realUploadToInnerServer(final Activity context, final String serverAddress,
+	                                            final String filePath, final OnUploadListener listener) {
+		ThreadPoolManager.executeTask(new Runnable() {
+			@Override
+			public void run() {
+				uploadImage(context, serverAddress, filePath, listener);
+			}
+		});
 	}
 
 	private static void uploadImage(final Activity context, final String serverAddress, final String filePath,
@@ -172,26 +170,27 @@ public class UploadUtils {
 	 */
 	public static void uploadToQiNiu(Activity context, final String token, final String filePath, boolean needCompress,
 	                                 final OnUploadToQiNiuListener listener) {
-		if (needCompress) {
-			compressImage(context, filePath, new OnCompressListener() {
-				@Override
-				public void onStart() {
-
-				}
-
-				@Override
-				public void onSuccess(File file) {
-					uploadImageToQiNiu(token, filePath, listener);
-				}
-
-				@Override
-				public void onError(Throwable e) {
-					uploadImageToQiNiu(token, filePath, listener);
-				}
-			});
-		} else {
+		if (!needCompress) {
 			uploadImageToQiNiu(token, filePath, listener);
+			return;
 		}
+
+		compressImage(context, filePath, new OnCompressListener() {
+			@Override
+			public void onStart() {
+
+			}
+
+			@Override
+			public void onSuccess(File file) {
+				uploadImageToQiNiu(token, filePath, listener);
+			}
+
+			@Override
+			public void onError(Throwable e) {
+				uploadImageToQiNiu(token, filePath, listener);
+			}
+		});
 	}
 
 	private static void uploadImageToQiNiu(String token, String filePath, final OnUploadToQiNiuListener listener) {

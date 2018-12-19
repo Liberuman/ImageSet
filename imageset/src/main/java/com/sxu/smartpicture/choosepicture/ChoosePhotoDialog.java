@@ -1,4 +1,4 @@
-package com.sxu.smartpicture.choosePicture;
+package com.sxu.smartpicture.choosepicture;
 
 import android.app.AlertDialog;
 import android.content.Context;

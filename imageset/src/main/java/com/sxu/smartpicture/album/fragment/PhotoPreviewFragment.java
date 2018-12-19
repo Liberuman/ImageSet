@@ -1,4 +1,4 @@
-package com.sxu.smartpicture.album;
+package com.sxu.smartpicture.album.fragment;
 
 
 import android.os.Build;
@@ -11,26 +11,29 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
-import com.sxu.imageloader.ImageLoaderManager;
-import com.sxu.imageloader.WrapImageView;
-import com.sxu.smartpicture.utils.DisplayUtil;
 import com.sxu.smartpicture.R;
+import com.sxu.smartpicture.album.listener.OnItemPhotoCheckedListener;
+import com.sxu.smartpicture.imageloader.ImageLoaderManager;
 import com.sxu.smartpicture.zoomimage.ZoomImageView;
 
 import java.util.ArrayList;
 
-/**
- * Created by Freeman on 17/3/31.
- */
-
+/*******************************************************************************
+ * Description: 图片预览
+ *
+ * Author: Freeman
+ *
+ * Date: 2018/03/31
+ *
+ * Copyright: all rights reserved by Freeman.
+ *******************************************************************************/
 public class PhotoPreviewFragment extends Fragment {
 
 	private ViewPager mViewPager;
 
+	private OnPagerChangedListener listener;
 	private ArrayList<String> allPhotoPath;
-	private ChoosePhotoActivity.OnItemPhotoCheckedListener checkedListener;
 
 	public static PhotoPreviewFragment getInstance(int currentIndex, ArrayList<String> allPhotoPath) {
 		PhotoPreviewFragment fragment = new PhotoPreviewFragment();
@@ -52,30 +55,17 @@ public class PhotoPreviewFragment extends Fragment {
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		Bundle bundle = getArguments();
-		final ChoosePhotoActivity context = (ChoosePhotoActivity) getActivity();
-		if (bundle != null) {
-			allPhotoPath = bundle.getStringArrayList("allPhotoPath");
-			if (allPhotoPath != null && allPhotoPath.size() > 0) {
-				mViewPager.setAdapter(new PhotoAdapter());
-				int currentIndex = bundle.getInt("currentIndex");
-				mViewPager.setCurrentItem(currentIndex);
-				context.setCheckIconStatus(allPhotoPath.get(currentIndex));
-			}
+		if (bundle == null) {
+			return;
+		}
+		allPhotoPath = bundle.getStringArrayList("allPhotoPath");
+		if (allPhotoPath != null && allPhotoPath.size() > 0) {
+			mViewPager.setAdapter(new PhotoAdapter());
+			int currentIndex = bundle.getInt("currentIndex");
+			mViewPager.setCurrentItem(currentIndex);
 		}
 
-		if (getActivity() instanceof ChoosePhotoActivity) {
-			((ChoosePhotoActivity) getActivity()).checkIcon.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					if (checkedListener != null) {
-						checkedListener.onItemChecked(context.checkIcon, !v.isSelected(),
-								allPhotoPath.get(mViewPager.getCurrentItem()));
-					}
-				}
-			});
-		}
-
-		mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+		final ViewPager.OnPageChangeListener pagerListener = new ViewPager.OnPageChangeListener() {
 			@Override
 			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
@@ -83,18 +73,27 @@ public class PhotoPreviewFragment extends Fragment {
 
 			@Override
 			public void onPageSelected(int position) {
-				context.setCheckIconStatus(allPhotoPath.get(position));
+				if (listener != null) {
+					listener.onChanged(position, allPhotoPath.get(position));
+				}
 			}
 
 			@Override
 			public void onPageScrollStateChanged(int state) {
 
 			}
+		};
+		mViewPager.addOnPageChangeListener(pagerListener);
+		mViewPager.post(new Runnable() {
+			@Override
+			public void run() {
+				pagerListener.onPageSelected(mViewPager.getCurrentItem());
+			}
 		});
 	}
 
-	public void setOnItemPhotoCheckedListener(ChoosePhotoActivity.OnItemPhotoCheckedListener listener) {
-		this.checkedListener = listener;
+	public void setOnPagerChangeListener(OnPagerChangedListener listener) {
+		this.listener = listener;
 	}
 
 	private class PhotoAdapter extends PagerAdapter {
@@ -114,9 +113,9 @@ public class PhotoPreviewFragment extends Fragment {
 		public Object instantiateItem(@NonNull ViewGroup container, int position) {
 			ZoomImageView imageView = new ZoomImageView(getActivity());
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-				imageView.setTransitionName("Preview" + position);
+				imageView.setTransitionName("Preview_" + position);
 			}
-			ImageLoaderManager.getInstance().displayImage(allPhotoPath.get(position), imageView);
+			ImageLoaderManager.getInstance().displayImage("file://" + allPhotoPath.get(position), imageView);
 			container.addView(imageView);
 
 			return imageView;
@@ -124,7 +123,11 @@ public class PhotoPreviewFragment extends Fragment {
 
 		@Override
 		public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
+			container.removeView((View) object);
 		}
+	}
 
+	public interface OnPagerChangedListener {
+		void onChanged(int position, String currentPhoto);
 	}
 }

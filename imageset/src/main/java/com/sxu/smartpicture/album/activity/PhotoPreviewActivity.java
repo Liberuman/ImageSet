@@ -1,9 +1,7 @@
-package com.sxu.smartpicture.album;
+package com.sxu.smartpicture.album.activity;
 
 import android.app.Activity;
-import android.app.SharedElementCallback;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,21 +12,17 @@ import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.github.chrisbanes.photoview.PhotoView;
-import com.sxu.imageloader.ImageLoaderManager;
 import com.sxu.smartpicture.R;
+import com.sxu.smartpicture.imageloader.ImageLoaderManager;
 import com.sxu.smartpicture.zoomimage.ZoomImageView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Freeman

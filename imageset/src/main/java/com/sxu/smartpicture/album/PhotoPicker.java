@@ -1,7 +1,12 @@
 package com.sxu.smartpicture.album;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+
+import com.sxu.permission.CheckPermission;
+import com.sxu.smartpicture.album.activity.ChoosePhotoActivity;
+import com.sxu.smartpicture.album.listener.OnSelectPhotoListener;
 
 import java.util.ArrayList;
 
@@ -29,21 +34,25 @@ public class PhotoPicker {
 	private ArrayList<String> mSelectedPhotos;
 	private boolean mIsShowCamera;
 	private boolean mIsDialog;
+	private OnSelectPhotoListener listener;
 
 	private PhotoPicker(Builder builder) {
 		this.mMaxPhotoCount = builder.mMaxPhotoCount;
 		this.mSelectedPhotos = builder.mSelectedPhotos;
 		this.mIsShowCamera = builder.mIsShowCamera;
 		this.mIsDialog = builder.mIsDialog;
+		this.listener = builder.listener;
 	}
 
-	public void chooseImage(Activity context) {
+	@CheckPermission(permissions = {Manifest.permission.READ_EXTERNAL_STORAGE})
+	public void chooseImage(Activity context, OnSelectPhotoListener listener) {
 		Intent intent = new Intent(context, ChoosePhotoActivity.class);
 		intent.putExtra(MAX_PHOTO_COUNT, mMaxPhotoCount != 0 ? mMaxPhotoCount : DEFAULT_MAX_PHOTO_COUNT);
 		intent.putExtra(SELECTED_PHOTOS, mSelectedPhotos);
 		intent.putExtra(SHOW_CAMERA, mIsShowCamera);
 		intent.putExtra(PHOTO_LIST_STYLE_DIALOG, mIsDialog);
-		context.startActivityForResult(intent, REQUEST_CODE_CHOOSE_PHOTO);
+		context.startActivity(intent);
+		ChoosePhotoActivity.setSelectListener(listener);
 	}
 
 	public static class Builder{
@@ -51,6 +60,7 @@ public class PhotoPicker {
 		private ArrayList<String> mSelectedPhotos;
 		private boolean mIsShowCamera;
 		private boolean mIsDialog;
+		private OnSelectPhotoListener listener;
 
 		public Builder setMaxPhotoCount(int maxCount) {
 			this.mMaxPhotoCount = maxCount;
@@ -67,8 +77,13 @@ public class PhotoPicker {
 			return this;
 		}
 
-		public Builder setIsDialog(boolean isDalog) {
-			this.mIsDialog = isDalog;
+		public Builder setIsDialog(boolean isDialog) {
+			this.mIsDialog = isDialog;
+			return this;
+		}
+
+		public Builder setOnSelectPhotoListener(OnSelectPhotoListener listener) {
+			this.listener = listener;
 			return this;
 		}
 

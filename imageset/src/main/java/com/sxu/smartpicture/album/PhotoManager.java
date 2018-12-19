@@ -11,10 +11,10 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.text.TextUtils;
-import android.widget.Toast;
 
+import com.sxu.permission.CheckPermission;
 import com.sxu.smartpicture.R;
-import com.sxu.smartpicture.utils.PermissionUtil;
+import com.sxu.smartpicture.album.activity.ChoosePhotoActivity;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -49,7 +49,9 @@ public class PhotoManager {
 	 * @param context
 	 * @param listener
 	 */
-	private void loadAllDirectory(final FragmentActivity context, final OnPhotoDirectoryLoadListener listener) {
+	@CheckPermission(permissions = {Manifest.permission.READ_EXTERNAL_STORAGE},
+			permissionDesc = "此功能需要读取存储卡才可使用")
+	public void loadAllDirectory(final FragmentActivity context, final OnPhotoDirectoryLoadListener listener) {
 		context.getSupportLoaderManager().initLoader(0, null, new LoaderManager.LoaderCallbacks<Cursor>() {
 			@Override
 			public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -98,33 +100,14 @@ public class PhotoManager {
 	}
 
 	/**
-	 * 获取所有的相册信息
-	 * @param context
-	 * @param listener
-	 */
-	public void getAllDirectory(final FragmentActivity context, final OnPhotoDirectoryLoadListener listener ) {
-		if (!PermissionUtil.checkPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-			PermissionUtil.setPermissionRequestListener(
-					context.getString(R.string.read_storage_permission_desc),
-					context.getString(R.string.read_storage_permission_setting_desc),
-					new PermissionUtil.OnPermissionRequestListener() {
-						@Override
-						public void onGranted() {
-							loadAllDirectory(context, listener);
-						}
-					});
-		} else {
-			loadAllDirectory(context, listener);
-		}
-	}
-
-	/**
 	 * 载入指定相册下的所有照片
 	 * @param context
 	 * @param bucketId
 	 * @param listener
 	 */
-	private static void loadPhotos(final FragmentActivity context, final String bucketId, final OnPhotoLoadListener listener ) {
+	@CheckPermission(permissions = {Manifest.permission.READ_EXTERNAL_STORAGE},
+			permissionDesc = "此功能需要读取存储卡才可使用")
+	public static void loadPhotos(final FragmentActivity context, final String bucketId, final OnPhotoLoadListener listener ) {
 		context.getSupportLoaderManager().initLoader(0, null, new LoaderManager.LoaderCallbacks<Cursor>() {
 			@Override
 			public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -168,33 +151,13 @@ public class PhotoManager {
 	}
 
 	/**
-	 * 根据相册ID获取指定相册的照片
-	 * @param context
-	 * @param bucketId
-	 * @param listener
-	 */
-	public static void getPhotos(final FragmentActivity context, final String bucketId, final OnPhotoLoadListener listener ) {
-		if (!PermissionUtil.checkPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-			PermissionUtil.setPermissionRequestListener(
-					context.getString(R.string.read_storage_permission_desc),
-					context.getString(R.string.read_storage_permission_setting_desc),
-					new PermissionUtil.OnPermissionRequestListener() {
-						@Override
-						public void onGranted() {
-							loadPhotos(context, bucketId, listener);
-						}
-					});
-		} else {
-			loadPhotos(context, bucketId, listener);
-		}
-	}
-
-	/**
 	 * 载入手机中的所有照片
 	 * @param context
 	 * @param listener
 	 */
-	private void loadAllPhotos(final FragmentActivity context, final OnPhotoDirectoryLoadListener listener) {
+	@CheckPermission(permissions = {Manifest.permission.READ_EXTERNAL_STORAGE},
+			permissionDesc = "此功能需要读取存储卡才可使用")
+	public void loadAllPhotos(final FragmentActivity context, final OnPhotoDirectoryLoadListener listener) {
 		if (directoryMap != null) {
 			if (listener != null) {
 				listener.onCompleted(new ArrayList<>(directoryMap.values()));
@@ -257,28 +220,6 @@ public class PhotoManager {
 
 				}
 			});
-		}
-	}
-
-
-	/**
-	 * 获取所有的照片
-	 * @param context
-	 * @param listener
-	 */
-	public void getAllPhotos(final FragmentActivity context, final OnPhotoDirectoryLoadListener listener) {
-		if (!PermissionUtil.checkPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-			PermissionUtil.setPermissionRequestListener(
-					context.getString(R.string.read_storage_permission_desc),
-					context.getString(R.string.read_storage_permission_setting_desc),
-					new PermissionUtil.OnPermissionRequestListener() {
-						@Override
-						public void onGranted() {
-							loadAllPhotos(context, listener);
-						}
-					});
-		} else {
-			loadAllPhotos(context, listener);
 		}
 	}
 

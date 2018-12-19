@@ -3,7 +3,6 @@ package com.sxu.imageset;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -14,10 +13,9 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.qiniu.android.http.ResponseInfo;
-import com.sxu.smartpicture.choosePicture.ChoosePhotoDialog;
-import com.sxu.smartpicture.choosePicture.ChoosePhotoManager;
-import com.sxu.smartpicture.choosePicture.OnChoosePhotoListener;
-import com.sxu.smartpicture.utils.PermissionUtil;
+import com.sxu.smartpicture.choosepicture.ChoosePhotoDialog;
+import com.sxu.smartpicture.choosepicture.ChoosePhotoManager;
+import com.sxu.smartpicture.choosepicture.OnSimpleChoosePhotoListener;
 import com.sxu.smartpicture.utils.UploadUtils;
 
 import org.json.JSONObject;
@@ -50,29 +48,12 @@ public class ChooseAndCropImageActivity extends AppCompatActivity {
 				dialog.setOnItemListener(new AdapterView.OnItemClickListener() {
 					@Override
 					public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-						ChoosePhotoManager.getInstance().setAutoCrop(true);
 						if (i == 0) {
-							ChoosePhotoManager.getInstance().choosePhotoFromCamera(ChooseAndCropImageActivity.this);
+							ChoosePhotoManager.getInstance().takePicture(ChooseAndCropImageActivity.this, true);
 						} else {
-							ChoosePhotoManager.getInstance().choosePhotoFromAlbum(ChooseAndCropImageActivity.this);
+							ChoosePhotoManager.getInstance().choosePhotoFromAlbum(ChooseAndCropImageActivity.this, true);
 						}
-						ChoosePhotoManager.getInstance().setChoosePhotoListener(new OnChoosePhotoListener() {
-							@Override
-							public void choosePhotoFromAlbum(Uri uri) {
-								if (uri != null) {
-									filePath = uri.getPath();
-									imageView.setImageURI(uri);
-								}
-							}
-
-							@Override
-							public void choosePhotoFromCamera(Uri uri) {
-								if (uri != null) {
-									filePath = uri.getPath();
-									imageView.setImageURI(uri);
-								}
-							}
-
+						ChoosePhotoManager.getInstance().setChoosePhotoListener(new OnSimpleChoosePhotoListener() {
 							@Override
 							public void cropPhoto(Uri uri) {
 								if (uri != null) {
@@ -130,11 +111,5 @@ public class ChooseAndCropImageActivity extends AppCompatActivity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		ChoosePhotoManager.getInstance().onActivityResult(this, requestCode, data);
-	}
-
-	@Override
-	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-		PermissionUtil.requestCallback(this, requestCode, permissions, grantResults);
 	}
 }

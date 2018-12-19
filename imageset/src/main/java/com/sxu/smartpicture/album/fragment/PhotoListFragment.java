@@ -1,4 +1,4 @@
-package com.sxu.smartpicture.album;
+package com.sxu.smartpicture.album.fragment;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,9 +11,12 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.sxu.imageloader.ImageLoaderManager;
-import com.sxu.imageloader.WrapImageView;
 import com.sxu.smartpicture.R;
+import com.sxu.smartpicture.album.CommonAdapter;
+import com.sxu.smartpicture.album.PhotoDirectoryBean;
+import com.sxu.smartpicture.album.PhotoManager;
+import com.sxu.smartpicture.imageloader.ImageLoaderManager;
+import com.sxu.smartpicture.imageloader.WrapImageView;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -45,10 +48,6 @@ public class PhotoListFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (getActivity() instanceof ChoosePhotoActivity) {
-            ChoosePhotoActivity context = ((ChoosePhotoActivity) getActivity());
-            context.updateViewVisible(context.FRAGMENT_TAG_LIST);
-        }
         getViews();
         initFragment();
     }
@@ -58,7 +57,7 @@ public class PhotoListFragment extends Fragment {
     }
 
     protected void initFragment() {
-        PhotoManager.getInstance().getAllPhotos(getActivity(), new PhotoManager.OnPhotoDirectoryLoadListener() {
+        PhotoManager.getInstance().loadAllPhotos(getActivity(), new PhotoManager.OnPhotoDirectoryLoadListener() {
             @Override
             public void onCompleted(List<PhotoDirectoryBean> directoryList) {
                 photoDirectories.clear();

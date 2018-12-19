@@ -1,4 +1,4 @@
-package com.sxu.smartpicture.choosePicture;
+package com.sxu.smartpicture.choosepicture;
 
 import android.net.Uri;
 

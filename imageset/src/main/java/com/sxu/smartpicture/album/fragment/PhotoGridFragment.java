@@ -1,11 +1,10 @@
-package com.sxu.smartpicture.album;
+package com.sxu.smartpicture.album.fragment;
 
 import android.animation.LayoutTransition;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,10 +13,14 @@ import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 
-import com.sxu.imageloader.ImageLoaderManager;
-import com.sxu.imageloader.WrapImageView;
-import com.sxu.smartpicture.utils.DisplayUtil;
 import com.sxu.smartpicture.R;
+import com.sxu.smartpicture.album.CommonAdapter;
+import com.sxu.smartpicture.album.PhotoDirectoryBean;
+import com.sxu.smartpicture.album.PhotoManager;
+import com.sxu.smartpicture.album.listener.OnItemPhotoCheckedListener;
+import com.sxu.smartpicture.imageloader.ImageLoaderManager;
+import com.sxu.smartpicture.imageloader.WrapImageView;
+import com.sxu.smartpicture.utils.DisplayUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,23 +33,25 @@ import java.util.List;
 public class PhotoGridFragment extends Fragment {
 
     private GridView photoGrid;
+    private View loadingLayout;
     private View mContentView;
 
-    private int scrollState = AbsListView.OnScrollListener.SCROLL_STATE_IDLE;
     private int imageSize;
-    //private int directionIndex;
+    private int directionIndex;
     private CommonAdapter<String> gridAdapter;
-    private List<PhotoDirectoryBean> photoDirectories = new ArrayList<>();
+    private ArrayList<String> selectedPhotos;
     private ArrayList<String> allPhotoPaths = new ArrayList<>();
 
-    private ChoosePhotoActivity.OnItemPhotoCheckedListener checkedListener;
+    private OnItemPhotoCheckedListener checkedListener;
     private OnItemPhotoPreviewListener previewListener;
 
     private static final String TAG_DIRECTION_INDEX = "directionIndex";
+    private static final String TAG_SELECTED_PHOTO = "selectedPhotos";
 
-    public static PhotoGridFragment newInstance(int directionIndex) {
+    public static PhotoGridFragment newInstance(int directionIndex, ArrayList<String> selectedPhotos) {
         Bundle bundle = new Bundle();
         bundle.putInt(TAG_DIRECTION_INDEX, directionIndex);
+        bundle.putStringArrayList(TAG_SELECTED_PHOTO, selectedPhotos);
         PhotoGridFragment fragment = new PhotoGridFragment();
         fragment.setArguments(bundle);
         return fragment;
@@ -55,10 +60,6 @@ public class PhotoGridFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if (getActivity() instanceof ChoosePhotoActivity) {
-            ChoosePhotoActivity context = ((ChoosePhotoActivity) getActivity());
-            context.updateViewVisible(context.FRAGMENT_TAG_GRID);
-        }
         mContentView = inflater.inflate(R.layout.fragment_photo_grid_layout, null);
         return mContentView;
     }
@@ -72,12 +73,17 @@ public class PhotoGridFragment extends Fragment {
 
     protected void getViews() {
         photoGrid = mContentView.findViewById(R.id.photo_grid);
+        loadingLayout = mContentView.findViewById(R.id.loading_layout);
     }
 
     protected void initFragment() {
-        final int directionIndex = getArguments().getInt(TAG_DIRECTION_INDEX, 0);
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            directionIndex = bundle.getInt(TAG_DIRECTION_INDEX, 0);
+            selectedPhotos = bundle.getStringArrayList(TAG_SELECTED_PHOTO);
+        }
 
-        PhotoManager.getInstance().getAllPhotos(getActivity(), new PhotoManager.OnPhotoDirectoryLoadListener() {
+        PhotoManager.getInstance().loadAllPhotos(getActivity(), new PhotoManager.OnPhotoDirectoryLoadListener() {
             @Override
             public void onCompleted(List<PhotoDirectoryBean> directoryList) {
                 if (directoryList != null && directionIndex < directoryList.size()) {
@@ -89,43 +95,32 @@ public class PhotoGridFragment extends Fragment {
         });
 
         photoGrid.setLayoutTransition(new LayoutTransition());
-        photoGrid.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView absListView, int state) {
-                scrollState = state;
-            }
-
-            @Override
-            public void onScroll(AbsListView absListView, int i, int i1, int i2) {
-
-            }
-        });
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        //startPostponedEnterTransition();
+        startPostponedEnterTransition();
     }
 
     private void setPhotoAdapter() {
+        loadingLayout.setVisibility(View.GONE);
         if (gridAdapter == null) {
             imageSize = (DisplayUtil.getScreenWidth() - DisplayUtil.dpToPx(32)) / 3;
             final FrameLayout.LayoutParams itemParams = new FrameLayout.LayoutParams(imageSize, imageSize);
             gridAdapter = new CommonAdapter<String>(getActivity(), allPhotoPaths, R.layout.item_photo_grid_layout) {
                 @Override
                 public void convert(final ViewHolder holder, final String params) {
-                    //if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
                     final WrapImageView photoIcon = (WrapImageView) holder.getView(R.id.photo);
                     final ImageView checkIcon = (ImageView) holder.getView(R.id.check_box);
-                    ImageLoaderManager.getInstance().displayImage("file://" + params, photoIcon);
+                    ImageLoaderManager.getInstance().displayImage("file://" + params, photoIcon, imageSize, imageSize);
                     photoIcon.setLayoutParams(itemParams);
-                    if (((ChoosePhotoActivity)getActivity()).selectedPhotos.contains(params)) {
+                    if (selectedPhotos != null && selectedPhotos.contains(params)) {
                         checkIcon.setSelected(true);
                     } else {
                         checkIcon.setSelected(false);
                     }
-                    ViewCompat.setTransitionName(photoIcon, "Preview00" + holder.getPosition());
+                    ViewCompat.setTransitionName(photoIcon, "Preview_" + holder.getPosition());
                     photoIcon.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -144,11 +139,13 @@ public class PhotoGridFragment extends Fragment {
                     });
                 }
             };
+            photoGrid.setAdapter(gridAdapter);
+        } else {
+            gridAdapter.notifyDataSetChanged();
         }
-        photoGrid.setAdapter(gridAdapter);
     }
 
-    public void setOnItemPhotoCheckedListener(ChoosePhotoActivity.OnItemPhotoCheckedListener listener) {
+    public void setOnItemPhotoCheckedListener(OnItemPhotoCheckedListener listener) {
         this.checkedListener = listener;
     }
 

@@ -4,7 +4,7 @@
               android:layout_height="match_parent"
               xmlns:app="http://schemas.android.com/apk/res-auto"
               android:orientation="vertical">
-    <com.sxu.imageloader.WrapImageView
+    <com.sxu.smartpicture.imageloader.WrapImageView
         android:id="@+id/image"
         android:layout_width="match_parent"
         android:layout_height="150dp"
@@ -14,7 +14,7 @@
         android:scaleType="centerCrop"
         app:placeHolder="@drawable/default_placeholder_image"
         app:failureHolder="@drawable/default_placeholder_image"/>
-    <com.sxu.imageloader.WrapImageView
+    <com.sxu.smartpicture.imageloader.WrapImageView
         android:id="@+id/blur_image"
         android:layout_width="match_parent"
         android:layout_height="180dp"
@@ -33,7 +33,7 @@
         android:layout_marginLeft="18dp"
         android:layout_marginRight="18dp"
         android:orientation="horizontal">
-        <com.sxu.imageloader.WrapImageView
+        <com.sxu.smartpicture.imageloader.WrapImageView
             android:id="@+id/rectangle_image"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -44,7 +44,7 @@
             app:radius="10dp"
             app:borderColor="#e1f5fe"
             app:shapeBorderWidth="5dp"/>
-        <com.sxu.imageloader.WrapImageView
+        <com.sxu.smartpicture.imageloader.WrapImageView
             android:id="@+id/circle_image"
             android:layout_width="0dp"
             android:layout_height="match_parent"

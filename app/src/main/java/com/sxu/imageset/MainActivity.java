@@ -1,11 +1,12 @@
 package com.sxu.imageset;
 
+import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.RadioGroup;
-
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -53,9 +54,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				startActivity(intent);
 				break;
 			case R.id.album_button:
-				startActivity(new Intent(this, AlbumActivity.class));
+				AlbumActivity.enter(this, imageLoaderType);
 				break;
 			case R.id.choose_image_button:
+				//test();
 				startActivity(new Intent(this, ChooseAndCropImageActivity.class));
 				break;
 			default:

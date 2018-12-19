@@ -1,14 +1,14 @@
-package com.sxu.smartpicture.album;
+package com.sxu.smartpicture.album.activity;
 
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.transition.Transition;
 import android.transition.TransitionInflater;
 import android.view.View;
@@ -17,10 +17,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.sxu.imageloader.ImageLoaderManager;
-import com.sxu.imageloader.instance.GlideInstance;
 import com.sxu.smartpicture.R;
-import com.sxu.smartpicture.utils.PermissionUtil;
+import com.sxu.smartpicture.album.listener.OnItemPhotoCheckedListener;
+import com.sxu.smartpicture.album.listener.OnSelectPhotoListener;
+import com.sxu.smartpicture.album.PhotoPicker;
+import com.sxu.smartpicture.album.fragment.PhotoGridFragment;
+import com.sxu.smartpicture.album.fragment.PhotoListFragment;
+import com.sxu.smartpicture.album.fragment.PhotoPreviewFragment;
+import com.sxu.smartpicture.imageloader.ImageLoaderManager;
+import com.sxu.smartpicture.imageloader.instance.GlideInstance;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +45,11 @@ public class ChoosePhotoActivity extends AppCompatActivity {
     private TextView completeText;
 
     private int maxCount = 0;
+    private String currentPhoto;
+    private Fragment currentFragment;
+    private FragmentManager fm;
+    private FragmentTransaction transaction;
+    private static OnSelectPhotoListener selectListener;
     public ArrayList<String> selectedPhotos = new ArrayList<>();
 
     public final String FRAGMENT_TAG_GRID = "grid";
@@ -50,9 +60,15 @@ public class ChoosePhotoActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_photo_layout);
-        ImageLoaderManager.getInstance().init(this, new GlideInstance());
+        if (!ImageLoaderManager.getInstance().isInit()) {
+            ImageLoaderManager.getInstance().init(this, new GlideInstance());
+        }
         getViews();
         initActivity();
+    }
+
+    public static void setSelectListener(OnSelectPhotoListener listener) {
+        selectListener = listener;
     }
 
     protected void getViews() {
@@ -65,20 +81,22 @@ public class ChoosePhotoActivity extends AppCompatActivity {
     }
 
     protected void initActivity() {
+        fm = getSupportFragmentManager();
+        transaction = fm.beginTransaction();
         maxCount = getIntent().getIntExtra(PhotoPicker.MAX_PHOTO_COUNT, 0);
-        List<String> photoList = getIntent().getStringArrayListExtra(PhotoPicker.SELECTED_PHOTOS);
+        final List<String> photoList = getIntent().getStringArrayListExtra(PhotoPicker.SELECTED_PHOTOS);
         if (photoList != null && photoList.size() > 0) {
             selectedPhotos.addAll(photoList);
             completeText.setText(getString(R.string.complete_text, photoList.size()));
         }
-        updateFragment(PhotoGridFragment.newInstance(0), FRAGMENT_TAG_GRID, true, false);
+        updateFragment(PhotoGridFragment.newInstance(0, selectedPhotos), FRAGMENT_TAG_GRID, true, false);
 
         completeText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent();
-                intent.putExtra(PhotoPicker.SELECTED_PHOTOS, selectedPhotos);
-                setResult(RESULT_OK, intent);
+                if (selectListener != null) {
+                    selectListener.onSelected(selectedPhotos);
+                }
                 finish();
             }
         });
@@ -94,6 +112,34 @@ public class ChoosePhotoActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
+        checkIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setCheckIconStatus(true, currentPhoto);
+            }
+        });
+        fm.registerFragmentLifecycleCallbacks(new FragmentManager.FragmentLifecycleCallbacks() {
+            @Override
+            public void onFragmentViewCreated(FragmentManager fm, Fragment f, View v, Bundle savedInstanceState) {
+                super.onFragmentViewCreated(fm, f, v, savedInstanceState);
+                updateViewVisible(f.getTag());
+            }
+
+            @Override
+            public void onFragmentResumed(FragmentManager fm, Fragment f) {
+                super.onFragmentResumed(fm, f);
+                currentFragment = f;
+                if (currentFragment instanceof PhotoPreviewFragment) {
+                    ((PhotoPreviewFragment) currentFragment).setOnPagerChangeListener(new PhotoPreviewFragment.OnPagerChangedListener() {
+                        @Override
+                        public void onChanged(int position, String photoPath) {
+                            currentPhoto = photoPath;
+                            setCheckIconStatus(false, photoPath);
+                        }
+                    });
+                }
+            }
+        }, true);
     }
 
     /**
@@ -104,7 +150,6 @@ public class ChoosePhotoActivity extends AppCompatActivity {
      * @param addToStack 是否需要添加到回退栈中
      */
     public void updateFragment(final Fragment fragment, String fragmentTag, final boolean isAdd, final boolean addToStack) {
-        final FragmentManager fm = getSupportFragmentManager();
         final FragmentTransaction transaction = fm.beginTransaction();
         if (isAdd) {
             transaction.add(R.id.container_layout, fragment, fragmentTag);
@@ -114,7 +159,7 @@ public class ChoosePhotoActivity extends AppCompatActivity {
         if (addToStack) {
             transaction.addToBackStack(null);
         }
-        transaction.commit();
+        transaction.commitAllowingStateLoss();
 
         if (fragment instanceof PhotoGridFragment) {
             ((PhotoGridFragment)fragment).setOnItemPhotoCheckedListener(
@@ -128,35 +173,35 @@ public class ChoosePhotoActivity extends AppCompatActivity {
                 @Override
                 public void onItemPreview(int currentItem, View itemView, ArrayList<String> allPhotos) {
                     PhotoPreviewFragment previewFragment = PhotoPreviewFragment.getInstance(currentItem, allPhotos);
-                    previewFragment.setAllowEnterTransitionOverlap(true);
+                    //previewFragment.setAllowEnterTransitionOverlap(true);
                     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
                         Transition transition = TransitionInflater.from(getBaseContext())
                                 .inflateTransition(android.R.transition.move);
-                        transition.setDuration(450);
+                        transition.setDuration(400);
                         previewFragment.setSharedElementEnterTransition(transition);
                     }
 
                     FragmentTransaction transaction = fm.beginTransaction();
-                    transaction.replace(R.id.container_layout, previewFragment);
-                    transaction.addSharedElement(itemView, "Preview" + currentItem);
+                    transaction.add(R.id.container_layout, previewFragment, FRAGMENT_TAG_PREVIEW);
+                    transaction.addSharedElement(itemView, "Preview_" + currentItem);
                     transaction.addToBackStack(null);
                     transaction.commit();
                     updateViewVisible(FRAGMENT_TAG_PREVIEW);
 
-                    previewFragment.setOnItemPhotoCheckedListener(
-                            new OnItemPhotoCheckedListener() {
-                                @Override
-                                public void onItemChecked(ImageView checkIcon, boolean isSelected, String photoPath) {
-                                    updateSelectedPhotos(checkIcon, isSelected, photoPath);
-                                }
-                            });
+//                    previewFragment.setOnItemPhotoCheckedListener(
+//                            new OnItemPhotoCheckedListener() {
+//                                @Override
+//                                public void onItemChecked(ImageView checkIcon, boolean isSelected, String photoPath) {
+//                                    updateSelectedPhotos(checkIcon, isSelected, photoPath);
+//                                }
+//                            });
                 }
             });
         } else if (fragment instanceof PhotoListFragment) {
             ((PhotoListFragment)fragment).setOnItemPhotoListClickListener(new PhotoListFragment.OnItemPhotoListClickListener() {
                 @Override
                 public void onItemPhotoListClick(int directoryIndex) {
-                    updateFragment(PhotoGridFragment.newInstance(directoryIndex), FRAGMENT_TAG_GRID, false, true);
+                    updateFragment(PhotoGridFragment.newInstance(directoryIndex, selectedPhotos), FRAGMENT_TAG_GRID, false, true);
                 }
             });
         } else {
@@ -164,8 +209,14 @@ public class ChoosePhotoActivity extends AppCompatActivity {
         }
     }
 
-    public void setCheckIconStatus(String photoPath) {
-        checkIcon.setSelected(selectedPhotos.contains(photoPath));
+    public void setCheckIconStatus(boolean isClick, String currentPhoto) {
+        if (currentFragment instanceof PhotoPreviewFragment) {
+            if (isClick) {
+                updateSelectedPhotos(checkIcon, !checkIcon.isSelected(), currentPhoto);
+            } else {
+                checkIcon.setSelected(selectedPhotos.contains(currentPhoto));
+            }
+        }
     }
 
     private void updateSelectedPhotos(ImageView checkIcon,
@@ -212,22 +263,33 @@ public class ChoosePhotoActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        PermissionUtil.requestCallback(this, requestCode, permissions, grantResults);
-    }
-
-    @Override
     public void onBackPressed() {
         FragmentManager fm = getSupportFragmentManager();
-        if (fm.getBackStackEntryCount() == 0 && fm.findFragmentByTag(FRAGMENT_TAG_GRID) != null) {
-            updateFragment(new PhotoListFragment(), FRAGMENT_TAG_LIST, false, false);
+        int backStackCount = fm.getBackStackEntryCount();
+        if (fm.findFragmentByTag(FRAGMENT_TAG_GRID) != null) {
+            if (backStackCount == 0) {
+                updateFragment(new PhotoListFragment(), FRAGMENT_TAG_LIST, false, false);
+            } else if (fm.findFragmentByTag(FRAGMENT_TAG_PREVIEW) != null) { // 从预览页面返回时更新View
+                super.onBackPressed();
+                updateViewVisible(FRAGMENT_TAG_GRID);
+            } else {
+                super.onBackPressed();
+            }
         } else {
             super.onBackPressed();
         }
+
+        List<Fragment> fragmentList = fm.getFragments();
+        if (fragmentList != null && fragmentList.size() > 0) {
+            String tag = fragmentList.get(fragmentList.size() - 1).getTag();
+            updateViewVisible(tag);
+        }
+
     }
 
-    public interface OnItemPhotoCheckedListener {
-        void onItemChecked(ImageView checkIcon, boolean isSelected, String photoPath);
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        selectListener = null;
     }
 }

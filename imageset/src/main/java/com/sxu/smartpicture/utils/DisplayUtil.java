@@ -5,17 +5,15 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Rect;
 
-/**
- * Copyright (c) 2017. Freeman Inc. All rights reserved.
+/*******************************************************************************
+ * Description: 屏幕相关的工具类
  *
- * 屏幕相关的工具类
+ * Author: Freeman
  *
- * @author Freeman
+ * Date: 2017/06/20
  *
- * @date 17/6/20
- */
-
-
+ * Copyright: all rights reserved by Freeman.
+ *******************************************************************************/
 public class DisplayUtil {
 
 	public static int getScreenWidth() {

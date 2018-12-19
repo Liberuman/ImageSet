@@ -12,12 +12,15 @@
         android:text="选择图片"
         android:textColor="@android:color/white"
         android:background="#4db6ac"/>
-    <LinearLayout
-        android:id="@+id/photo_layout"
+    <GridView
+        android:id="@+id/photo_grid"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:paddingLeft="8dp"
-        android:paddingRight="16dp"
-        android:orientation="horizontal"/>
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:horizontalSpacing="12dp"
+        android:verticalSpacing="12dp"
+        android:numColumns="3"
+        android:scrollbars="none"/>
 </LinearLayout>

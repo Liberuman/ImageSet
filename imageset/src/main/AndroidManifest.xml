@@ -8,10 +8,10 @@
     <uses-permission android:name="android.permission.CAMERA"/>
 
     <application>
-        <activity android:name=".album.ChoosePhotoActivity"
+        <activity android:name=".album.activity.ChoosePhotoActivity"
                   android:hardwareAccelerated="true"
             android:theme="@style/Theme.AppCompat.NoActionBar"/>
-        <activity android:name=".album.PhotoPreviewActivity"
+        <activity android:name=".album.activity.PhotoPreviewActivity"
                   android:theme="@style/PreviewPhotoTheme"/>
     </application>
 </manifest>

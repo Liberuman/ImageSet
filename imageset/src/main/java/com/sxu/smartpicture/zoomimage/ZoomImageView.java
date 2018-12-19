@@ -20,7 +20,10 @@ import com.github.chrisbanes.photoview.OnSingleFlingListener;
 import com.github.chrisbanes.photoview.OnViewDragListener;
 import com.github.chrisbanes.photoview.OnViewTapListener;
 import com.github.chrisbanes.photoview.PhotoViewAttacher;
-import com.sxu.imageloader.WrapImageView;
+import com.sxu.smartpicture.imageloader.ImageLoaderManager;
+import com.sxu.smartpicture.imageloader.WrapImageView;
+import com.sxu.smartpicture.imageloader.instance.FrescoInstance;
+
 
 /*******************************************************************************
  * Description: 可缩放的图片组件
@@ -33,6 +36,7 @@ import com.sxu.imageloader.WrapImageView;
  *******************************************************************************/
 public class ZoomImageView extends WrapImageView {
 
+	private boolean isFresco;
 	private PhotoViewAttacher attacher;
 	private ScaleType pendingScaleType;
 
@@ -50,18 +54,13 @@ public class ZoomImageView extends WrapImageView {
 	}
 
 	private void init() {
-		if (this instanceof GenericDraweeView) {
+		isFresco = ImageLoaderManager.getInstance().getImageLoaderInstance() instanceof FrescoInstance;
+		if (isFresco) {
 			attacher = new FrescoAttacher(this);
 		} else {
 			attacher = new PhotoViewAttacher(this);
+			super.setScaleType(ScaleType.MATRIX);
 		}
-
-		getHierarchy().setActualImageScaleType(ScalingUtils.ScaleType.FIT_CENTER);
-
-		//We always pose as a Matrix scale type, though we can change to another scale type
-		//via the attacher
-		//apply the previously applied scale type
-		super.setScaleType(ScaleType.MATRIX);
 		if (pendingScaleType != null) {
 			setScaleType(pendingScaleType);
 			pendingScaleType = null;
@@ -69,7 +68,7 @@ public class ZoomImageView extends WrapImageView {
 	}
 
 	@Override protected void onDraw(@NonNull Canvas canvas) {
-		if (this instanceof GenericDraweeView) {
+		if (isFresco) {
 			canvas.concat(attacher.getImageMatrix());
 			super.onDraw(canvas);
 		} else {

@@ -1,28 +1,23 @@
 package com.sxu.imageset;
 
-import android.app.SharedElementCallback;
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.sxu.imageloader.ImageLoaderManager;
-import com.sxu.imageloader.WrapImageView;
-import com.sxu.imageloader.instance.FrescoInstance;
-import com.sxu.imageloader.instance.GlideInstance;
-import com.sxu.imageloader.instance.UILInstance;
-import com.sxu.imageloader.listener.ImageLoaderListener;
-import com.sxu.smartpicture.album.PhotoPreviewActivity;
+import com.sxu.smartpicture.album.activity.PhotoPreviewActivity;
+import com.sxu.smartpicture.imageloader.ImageLoaderManager;
+import com.sxu.smartpicture.imageloader.WrapImageView;
+import com.sxu.smartpicture.imageloader.instance.FrescoInstance;
+import com.sxu.smartpicture.imageloader.instance.GlideInstance;
+import com.sxu.smartpicture.imageloader.instance.UILInstance;
+import com.sxu.smartpicture.imageloader.listener.ImageLoaderListener;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -65,7 +60,7 @@ public class ImageLoaderActivity extends AppCompatActivity {
 		ViewCompat.setTransitionName(blurImage, PhotoPreviewActivity.TRANSITION_NAME_PREFIX + "1");
 		ViewCompat.setTransitionName(rectangleImage, PhotoPreviewActivity.TRANSITION_NAME_PREFIX + "2");
 		ImageLoaderManager.getInstance().displayImage("http://t.cn/RTRKzUt", image);
-		ImageLoaderManager.getInstance().displayImage("http://img.tuku.cn/file_thumb/201602/m2016021513470744.jpg", blurImage);
+		ImageLoaderManager.getInstance().displayImage("http://t.cn/RTRKzUt", blurImage);
 		ImageLoaderManager.getInstance().displayImage("http://t.cn/RTRKzUt", rectangleImage);
 		ImageLoaderManager.getInstance().displayImage("http://t.cn/RTRKJvS", circleImage);
 
