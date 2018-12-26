@@ -2,6 +2,7 @@ package com.sxu.smartpicture.album.fragment;
 
 import android.animation.LayoutTransition;
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
@@ -18,6 +19,7 @@ import com.sxu.smartpicture.album.CommonAdapter;
 import com.sxu.smartpicture.album.PhotoDirectoryBean;
 import com.sxu.smartpicture.album.PhotoManager;
 import com.sxu.smartpicture.album.listener.OnItemPhotoCheckedListener;
+import com.sxu.smartpicture.album.listener.OnViewCreatedListener;
 import com.sxu.smartpicture.imageloader.ImageLoaderManager;
 import com.sxu.smartpicture.imageloader.WrapImageView;
 import com.sxu.smartpicture.utils.DisplayUtil;
@@ -26,9 +28,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-/**
- * Created by Freeman on 17/3/31.
- */
+/*******************************************************************************
+ * Description: 相册展示页面
+ *
+ * Author: Freeman
+ *
+ * Date: 2018/03/31
+ *
+ * Copyright: all rights reserved by Freeman.
+ *******************************************************************************/
 
 public class PhotoGridFragment extends Fragment {
 
@@ -38,12 +46,14 @@ public class PhotoGridFragment extends Fragment {
 
     private int imageSize;
     private int directionIndex;
+    private int itemLayoutResId = R.layout.item_photo_grid_layout;
     private CommonAdapter<String> gridAdapter;
     private ArrayList<String> selectedPhotos;
     private ArrayList<String> allPhotoPaths = new ArrayList<>();
 
     private OnItemPhotoCheckedListener checkedListener;
     private OnItemPhotoPreviewListener previewListener;
+    private OnViewCreatedListener viewCreatedListener;
 
     private static final String TAG_DIRECTION_INDEX = "directionIndex";
     private static final String TAG_SELECTED_PHOTO = "selectedPhotos";
@@ -68,6 +78,15 @@ public class PhotoGridFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getViews();
+        if (viewCreatedListener != null) {
+            viewCreatedListener.onViewCreated(photoGrid);
+        }
+
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            directionIndex = bundle.getInt(TAG_DIRECTION_INDEX, 0);
+            selectedPhotos = bundle.getStringArrayList(TAG_SELECTED_PHOTO);
+        }
         initFragment();
     }
 
@@ -77,12 +96,6 @@ public class PhotoGridFragment extends Fragment {
     }
 
     protected void initFragment() {
-        Bundle bundle = getArguments();
-        if (bundle != null) {
-            directionIndex = bundle.getInt(TAG_DIRECTION_INDEX, 0);
-            selectedPhotos = bundle.getStringArrayList(TAG_SELECTED_PHOTO);
-        }
-
         PhotoManager.getInstance().loadAllPhotos(getActivity(), new PhotoManager.OnPhotoDirectoryLoadListener() {
             @Override
             public void onCompleted(List<PhotoDirectoryBean> directoryList) {
@@ -97,6 +110,19 @@ public class PhotoGridFragment extends Fragment {
         photoGrid.setLayoutTransition(new LayoutTransition());
     }
 
+    /**
+     * 更新图片列表，如首次加载图片列表，点击相册列表，从预览页面返回
+     * @param directionIndex 如果<0，表示directionIndex不变
+     * @param selectedPhotos
+     */
+    public void updateGridLayout(int directionIndex, ArrayList<String> selectedPhotos) {
+        if (directionIndex >= 0) {
+            this.directionIndex = directionIndex;
+        }
+        this.selectedPhotos = selectedPhotos;
+        initFragment();
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -106,9 +132,12 @@ public class PhotoGridFragment extends Fragment {
     private void setPhotoAdapter() {
         loadingLayout.setVisibility(View.GONE);
         if (gridAdapter == null) {
-            imageSize = (DisplayUtil.getScreenWidth() - DisplayUtil.dpToPx(32)) / 3;
+            int columnCount = photoGrid.getNumColumns();
+            int horizontalPadding = photoGrid.getPaddingLeft() + photoGrid.getPaddingRight();
+            int horizontalSpace = (photoGrid.getNumColumns() - 1) * photoGrid.getHorizontalSpacing();
+            imageSize = (DisplayUtil.getScreenWidth() - horizontalPadding - horizontalSpace) / columnCount;
             final FrameLayout.LayoutParams itemParams = new FrameLayout.LayoutParams(imageSize, imageSize);
-            gridAdapter = new CommonAdapter<String>(getActivity(), allPhotoPaths, R.layout.item_photo_grid_layout) {
+            gridAdapter = new CommonAdapter<String>(getActivity(), allPhotoPaths, itemLayoutResId) {
                 @Override
                 public void convert(final ViewHolder holder, final String params) {
                     final WrapImageView photoIcon = (WrapImageView) holder.getView(R.id.photo);
@@ -134,7 +163,7 @@ public class PhotoGridFragment extends Fragment {
                     checkIcon.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            checkedListener.onItemChecked(checkIcon, !checkIcon.isSelected(), params);
+                            checkedListener.onItemChecked(checkIcon, params);
                         }
                     });
                 }
@@ -145,12 +174,35 @@ public class PhotoGridFragment extends Fragment {
         }
     }
 
+    /**
+     * 预览改变图片的选中状态后需要刷新页面
+     */
+    public void notifyDataChanged() {
+        setPhotoAdapter();
+    }
+
     public void setOnItemPhotoCheckedListener(OnItemPhotoCheckedListener listener) {
         this.checkedListener = listener;
     }
 
     public void setOnItemPhotoPreviewListener(OnItemPhotoPreviewListener listener) {
         this.previewListener = listener;
+    }
+
+    public void setOnViewCreatedListener(OnViewCreatedListener listener) {
+        setOnViewCreatedListener(0, listener);
+    }
+
+    /**
+     * 监听Fragment中View的加载，用于自定义View样式
+     * @param itemLayoutResId 自定义的相册子布局
+     * @param listener 监听Fragment中View的加载，用于修改GridView的样式
+     */
+    public void setOnViewCreatedListener(@LayoutRes int itemLayoutResId,  OnViewCreatedListener listener) {
+        if (itemLayoutResId != 0) {
+            this.itemLayoutResId = itemLayoutResId;
+        }
+        this.viewCreatedListener = listener;
     }
 
     public interface OnItemPhotoPreviewListener {

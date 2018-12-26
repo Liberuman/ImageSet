@@ -55,6 +55,16 @@ public class PhotoPicker {
 		ChoosePhotoActivity.setSelectListener(listener);
 	}
 
+	@CheckPermission(permissions = {Manifest.permission.READ_EXTERNAL_STORAGE})
+	public void chooseImage(Activity context, Class classT) {
+		Intent intent = new Intent(context, classT);
+		intent.putExtra(MAX_PHOTO_COUNT, mMaxPhotoCount != 0 ? mMaxPhotoCount : DEFAULT_MAX_PHOTO_COUNT);
+		intent.putExtra(SELECTED_PHOTOS, mSelectedPhotos);
+		intent.putExtra(SHOW_CAMERA, mIsShowCamera);
+		intent.putExtra(PHOTO_LIST_STYLE_DIALOG, mIsDialog);
+		context.startActivityForResult(intent, REQUEST_CODE_CHOOSE_PHOTO);
+	}
+
 	public static class Builder{
 		private int mMaxPhotoCount;
 		private ArrayList<String> mSelectedPhotos;

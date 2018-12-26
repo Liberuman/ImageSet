@@ -3,6 +3,7 @@ package com.sxu.smartpicture.album.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -18,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sxu.smartpicture.R;
+import com.sxu.smartpicture.album.FragmentHandlerManager;
 import com.sxu.smartpicture.imageloader.ImageLoaderManager;
 import com.sxu.smartpicture.zoomimage.ZoomImageView;
 
@@ -31,6 +33,7 @@ import java.util.List;
 
 
 public class PhotoPreviewActivity extends AppCompatActivity {
+
 
 	private static final String EXTRA_PARAM_CURRENT_INDEX = "currentIndex";
 	private static final String EXTRA_PARAM_IMAGE_LIST = "imageList";

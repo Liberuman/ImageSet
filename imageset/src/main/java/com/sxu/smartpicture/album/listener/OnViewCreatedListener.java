@@ -1,17 +1,18 @@
 package com.sxu.smartpicture.album.listener;
 
-import android.widget.ImageView;
+import android.view.View;
+import android.widget.AbsListView;
+import android.widget.GridView;
 
 /*******************************************************************************
- * Description: 图片被选择的监听
+ * Description: 监听View加载（用于修改View样式）
  *
  * Author: Freeman
  *
- * Date: 2018/12/19
+ * Date: 2018/12/24
  *
  * Copyright: all rights reserved by Freeman.
  *******************************************************************************/
-public interface OnItemPhotoCheckedListener {
-
-	void onItemChecked(ImageView checkIcon, String photoPath);
+public interface OnViewCreatedListener {
+	void onViewCreated(View containerView);
 }

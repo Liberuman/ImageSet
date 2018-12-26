@@ -9,7 +9,16 @@
         android:layout_height="48dp"
         android:layout_marginTop="24dp"
         android:layout_gravity="center_horizontal"
-        android:text="选择图片"
+        android:text="选择图片(默认样式)"
+        android:textColor="@android:color/white"
+        android:background="#4db6ac"/>
+    <Button
+        android:id="@+id/choose_wx_button"
+        android:layout_width="200dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="24dp"
+        android:layout_gravity="center_horizontal"
+        android:text="选择图片(仿微信)"
         android:textColor="@android:color/white"
         android:background="#4db6ac"/>
     <GridView

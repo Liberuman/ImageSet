@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">ImageSet</string>
-
+    <string name="preview">预览</string>
+    <string name="preview_image">预览(%d)</string>
+    <string name="complete_text">完成(%d/%d)</string>
     <string name="deny_camera_permission_tips">此应用需要获取相机使用权限，才能提供拍照功能</string>
     <string name="camera_permission_setting_desc">要使用相机功能，请在权限管理中开启相机权限</string>
 </resources>

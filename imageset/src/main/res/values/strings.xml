@@ -7,7 +7,7 @@
     <string name="all_photo">所有照片</string>
     <string name="cancel">取消</string>
     <string name="complete">完成</string>
-    <string name="complete_text">完成(%d)</string>
+    <string name="complete_text">完成(%d/%d)</string>
     <string name="max_select_count">你最多可以选择%d张照片</string>
     <string name="camera_permission_desc">此应用需要获取相机使用\n权限，才能提供拍照功能</string>
     <string name="camera_permission_setting_desc">要使用相机功能，请在权限管理中开启相机权限</string>

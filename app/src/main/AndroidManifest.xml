@@ -22,8 +22,11 @@
             android:name=".ChooseAndCropImageActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
         <activity
-            android:name=".AlbumActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+            android:name=".AlbumActivity"/>
+        <activity
+            android:name=".WxChoosePhotoActivity"/>
+        <activity
+            android:name=".WxPreviewPhotoActivity"/>
     </application>
 
 </manifest>

@@ -8,4 +8,9 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="WxChoosePhotoTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/gray_33</item>
+        <item name="colorPrimaryDark">@color/gray_33</item>
+    </style>
 </resources>

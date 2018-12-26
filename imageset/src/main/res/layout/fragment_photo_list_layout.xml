@@ -3,7 +3,8 @@
     android:id="@+id/photo_list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:divider="@drawable/common_line_e4_24_0"
+    android:paddingLeft="24dp"
+    android:divider="@drawable/common_line_e4"
     android:listSelector="@color/transparent"
     android:scrollbars="none"
     android:background="@android:color/white"/>

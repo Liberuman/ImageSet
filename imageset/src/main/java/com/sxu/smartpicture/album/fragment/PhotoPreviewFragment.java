@@ -13,11 +13,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.sxu.smartpicture.R;
-import com.sxu.smartpicture.album.listener.OnItemPhotoCheckedListener;
+import com.sxu.smartpicture.album.listener.OnViewCreatedListener;
 import com.sxu.smartpicture.imageloader.ImageLoaderManager;
 import com.sxu.smartpicture.zoomimage.ZoomImageView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /*******************************************************************************
  * Description: 图片预览
@@ -30,41 +31,67 @@ import java.util.ArrayList;
  *******************************************************************************/
 public class PhotoPreviewFragment extends Fragment {
 
-	private ViewPager mViewPager;
+	private ViewPager viewPager;
 
+	private OnViewCreatedListener viewCreatedListener;
 	private OnPagerChangedListener listener;
-	private ArrayList<String> allPhotoPath;
+	private ArrayList<String> allPhotoPath = new ArrayList<>();
+
+	private final static String KEY_CURRENT_INDEX = "currentIndex";
+	private final static String KEY_ALL_PHOTO = "allPhotoPath";
 
 	public static PhotoPreviewFragment getInstance(int currentIndex, ArrayList<String> allPhotoPath) {
 		PhotoPreviewFragment fragment = new PhotoPreviewFragment();
 		Bundle bundle = new Bundle();
-		bundle.putInt("currentIndex", currentIndex);
-		bundle.putStringArrayList("allPhotoPath", allPhotoPath);
+		bundle.putInt(KEY_CURRENT_INDEX, currentIndex);
+		bundle.putStringArrayList(KEY_ALL_PHOTO, allPhotoPath);
 		fragment.setArguments(bundle);
 		return fragment;
+	}
+
+	/**
+	 * 更新要预览的图片数据
+	 * @param currentIndex
+	 * @param allPhotos
+	 */
+	public void updatePhotoList(int currentIndex, ArrayList<String> allPhotos) {
+		Bundle bundle = getArguments();
+		if (bundle == null) {
+			bundle = new Bundle();
+		}
+		bundle.putInt(KEY_CURRENT_INDEX, currentIndex);
+		bundle.putStringArrayList(KEY_ALL_PHOTO, allPhotos);
+		setArguments(bundle);
 	}
 
 	@Nullable
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		mViewPager = (ViewPager) inflater.inflate(R.layout.fragment_photo_preview_layout, null);
-		return mViewPager;
+		viewPager = (ViewPager) inflater.inflate(R.layout.fragment_photo_preview_layout, null);
+		return viewPager;
 	}
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		Bundle bundle = getArguments();
-		if (bundle == null) {
-			return;
-		}
-		allPhotoPath = bundle.getStringArrayList("allPhotoPath");
-		if (allPhotoPath != null && allPhotoPath.size() > 0) {
-			mViewPager.setAdapter(new PhotoAdapter());
-			int currentIndex = bundle.getInt("currentIndex");
-			mViewPager.setCurrentItem(currentIndex);
+		if (viewCreatedListener != null) {
+			viewCreatedListener.onViewCreated(viewPager);
 		}
 
+		Bundle bundle = getArguments();
+		List<String> allPhotos = bundle != null ? bundle.getStringArrayList(KEY_ALL_PHOTO) : null;
+		if (allPhotos == null || allPhotos.size() == 0) {
+			return;
+		}
+
+		allPhotoPath.clear();
+		allPhotoPath.addAll(allPhotos);
+		viewPager.setAdapter(new PhotoAdapter());
+		viewPager.setCurrentItem(bundle.getInt(KEY_CURRENT_INDEX));
+		setPagerChangeListener();
+	}
+
+	private void setPagerChangeListener() {
 		final ViewPager.OnPageChangeListener pagerListener = new ViewPager.OnPageChangeListener() {
 			@Override
 			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -83,11 +110,12 @@ public class PhotoPreviewFragment extends Fragment {
 
 			}
 		};
-		mViewPager.addOnPageChangeListener(pagerListener);
-		mViewPager.post(new Runnable() {
+		viewPager.addOnPageChangeListener(pagerListener);
+		// ViewPager设置setCurrentItem时不会调用onPageSelected，所以手动调用确保逻辑的一致性
+		viewPager.post(new Runnable() {
 			@Override
 			public void run() {
-				pagerListener.onPageSelected(mViewPager.getCurrentItem());
+				pagerListener.onPageSelected(viewPager.getCurrentItem());
 			}
 		});
 	}
@@ -122,11 +150,23 @@ public class PhotoPreviewFragment extends Fragment {
 		}
 
 		@Override
+		public int getItemPosition(@NonNull Object object) {
+			return POSITION_UNCHANGED;
+		}
+
+		@Override
 		public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
 			container.removeView((View) object);
 		}
 	}
 
+	public void setOnViewCreatedListener(OnViewCreatedListener listener) {
+		this.viewCreatedListener = listener;
+	}
+
+	/**
+	 * 监听ViewPager的滑动切换
+	 */
 	public interface OnPagerChangedListener {
 		void onChanged(int position, String currentPhoto);
 	}

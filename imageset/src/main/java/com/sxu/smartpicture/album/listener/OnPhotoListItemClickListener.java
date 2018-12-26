@@ -1,17 +1,17 @@
 package com.sxu.smartpicture.album.listener;
 
-import android.widget.ImageView;
+import com.sxu.smartpicture.album.PhotoDirectoryBean;
 
 /*******************************************************************************
- * Description: 图片被选择的监听
+ * Description: 监听相册目录列表点击
  *
  * Author: Freeman
  *
- * Date: 2018/12/19
+ * Date: 2018/12/24
  *
  * Copyright: all rights reserved by Freeman.
  *******************************************************************************/
-public interface OnItemPhotoCheckedListener {
+public interface OnPhotoListItemClickListener {
 
-	void onItemChecked(ImageView checkIcon, String photoPath);
+	void onPhotoListItemClick(int index, PhotoDirectoryBean directoryInfo);
 }

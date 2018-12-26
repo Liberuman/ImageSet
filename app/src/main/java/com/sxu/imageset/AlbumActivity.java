@@ -22,6 +22,7 @@ import com.sxu.smartpicture.imageloader.instance.UILInstance;
 import com.sxu.smartpicture.utils.DisplayUtil;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Freeman
@@ -40,6 +41,7 @@ public class AlbumActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_album_layout);
 		Button chooseButton = (Button)findViewById(R.id.choose_button);
+		Button chooseWxButton = (Button)findViewById(R.id.choose_wx_button);
 		photoGrid = (GridView) findViewById(R.id.photo_grid);
 
 		int type = getIntent().getIntExtra("type", 0);
@@ -60,22 +62,49 @@ public class AlbumActivity extends AppCompatActivity {
 		chooseButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				PhotoPicker picker = new PhotoPicker.Builder()
-						.setIsDialog(false)
-						.setIsShowCamera(false)
-						.setMaxPhotoCount(9)
-						.setSelectedPhotos(selectedPhotos)
-						.builder();
-				picker.chooseImage(AlbumActivity.this, new OnSelectPhotoListener() {
-					@Override
-					public void onSelected(ArrayList<String> selectedPhotoList) {
-						selectedPhotos.clear();
-						selectedPhotos.addAll(selectedPhotoList);
-						setPhotoAdapter();
-					}
-				});
+				openDefaultPhotoPicker();
 			}
 		});
+
+		chooseWxButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				openWxPhotoPicker();
+			}
+		});
+	}
+
+	/**
+	 * 使用默认的图片选择组件
+	 */
+	private void openDefaultPhotoPicker() {
+		PhotoPicker picker = new PhotoPicker.Builder()
+				.setIsDialog(false)
+				.setIsShowCamera(false)
+				.setMaxPhotoCount(9)
+				.setSelectedPhotos(selectedPhotos)
+				.builder();
+		picker.chooseImage(AlbumActivity.this, new OnSelectPhotoListener() {
+			@Override
+			public void onSelected(ArrayList<String> selectedPhotoList) {
+				selectedPhotos.clear();
+				selectedPhotos.addAll(selectedPhotoList);
+				setPhotoAdapter();
+			}
+		});
+	}
+
+	/**
+	 * 使用仿微信的图片选择组件 注意这种方式需要在onActivityResult获取选择结果
+	 */
+	private void openWxPhotoPicker() {
+		PhotoPicker picker = new PhotoPicker.Builder()
+				.setIsDialog(false)
+				.setIsShowCamera(false)
+				.setMaxPhotoCount(9)
+				.setSelectedPhotos(selectedPhotos)
+				.builder();
+		picker.chooseImage(AlbumActivity.this, WxChoosePhotoActivity.class);
 	}
 
 	public static void enter(Context context, int imageLoaderType) {
@@ -117,6 +146,21 @@ public class AlbumActivity extends AppCompatActivity {
 			photoGrid.setAdapter(photoAdapter);
 		} else {
 			photoAdapter.notifyDataSetChanged();
+		}
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode != PhotoPicker.REQUEST_CODE_CHOOSE_PHOTO || data == null) {
+			return;
+		}
+
+		List<String> photoList = data.getStringArrayListExtra(PhotoPicker.SELECTED_PHOTOS);
+		if (photoList != null && photoList.size() > 0) {
+			selectedPhotos.clear();
+			selectedPhotos.addAll(photoList);
+			setPhotoAdapter();
 		}
 	}
 

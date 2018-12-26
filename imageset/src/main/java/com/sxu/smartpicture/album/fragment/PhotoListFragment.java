@@ -2,19 +2,21 @@ package com.sxu.smartpicture.album.fragment;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.sxu.smartpicture.R;
 import com.sxu.smartpicture.album.CommonAdapter;
 import com.sxu.smartpicture.album.PhotoDirectoryBean;
 import com.sxu.smartpicture.album.PhotoManager;
+import com.sxu.smartpicture.album.listener.OnPhotoListItemClickListener;
+import com.sxu.smartpicture.album.listener.OnViewCreatedListener;
 import com.sxu.smartpicture.imageloader.ImageLoaderManager;
 import com.sxu.smartpicture.imageloader.WrapImageView;
 
@@ -23,19 +25,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-/**
- * Created by Freeman on 17/3/31.
- */
-
+/*******************************************************************************
+ * Description: 相册列表
+ *
+ * Author: Freeman
+ *
+ * Date: 2018/03/31
+ *
+ * Copyright: all rights reserved by Freeman.
+ *******************************************************************************/
 public class PhotoListFragment extends Fragment {
 
     private ListView photoList;
     private List<PhotoDirectoryBean> photoDirectories = new ArrayList<>();
-    private OnItemPhotoListClickListener listener;
+    private OnPhotoListItemClickListener listener;
 
     private View mContentView;
-    private boolean isScrolling = false;
-    private static final String TAG_PHOTO_DIRECTORIES = "photoDirectories";
+    private int selectedDirectionIndex = 0;
+    private int itemLayoutResId = R.layout.item_photo_list_layout;
+    private OnViewCreatedListener viewCreatedListener;
     private CommonAdapter<PhotoDirectoryBean> directoryAdapter = null;
 
     @Nullable
@@ -57,6 +65,10 @@ public class PhotoListFragment extends Fragment {
     }
 
     protected void initFragment() {
+        if (viewCreatedListener != null) {
+            viewCreatedListener.onViewCreated(photoList);
+        }
+
         PhotoManager.getInstance().loadAllPhotos(getActivity(), new PhotoManager.OnPhotoDirectoryLoadListener() {
             @Override
             public void onCompleted(List<PhotoDirectoryBean> directoryList) {
@@ -65,56 +77,57 @@ public class PhotoListFragment extends Fragment {
                 setPhotoDirectoryAdapter();
             }
         });
-
-        photoList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if (listener != null) {
-                    listener.onItemPhotoListClick(i);
-                }
-            }
-        });
-
-        photoList.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView absListView, int i) {
-                if (i == SCROLL_STATE_IDLE) {
-                    isScrolling = false;
-                    directoryAdapter.notifyDataSetChanged();
-                } else {
-                    isScrolling = true;
-                }
-            }
-
-            @Override
-            public void onScroll(AbsListView absListView, int i, int i1, int i2) {
-
-            }
-        });
     }
 
     private void setPhotoDirectoryAdapter() {
-        if (directoryAdapter == null) {
-            directoryAdapter = new CommonAdapter<PhotoDirectoryBean>(getActivity(), photoDirectories,
-                    R.layout.item_photo_list_layout) {
-                @Override
-                public void convert(ViewHolder holder, final PhotoDirectoryBean params) {
-                    holder.setText(R.id.directory_name_text, params.name);
-                    if (!isScrolling) {
-                        WrapImageView photo = (WrapImageView) holder.getView(R.id.directory_icon);
-                        ImageLoaderManager.getInstance().displayImage(Uri.fromFile(new File(params.thumbPath)).toString(), photo);
-                    }
+        directoryAdapter = new CommonAdapter<PhotoDirectoryBean>(getActivity(), photoDirectories, itemLayoutResId) {
+            @Override
+            public void convert(final ViewHolder holder, final PhotoDirectoryBean params) {
+                WrapImageView photo = (WrapImageView) holder.getView(R.id.directory_icon);
+                final ImageView checkIcon = (ImageView) holder.getView(R.id.check_icon);
+
+                if (selectedDirectionIndex == holder.getPosition()) {
+                    checkIcon.setSelected(true);
+                } else {
+                    checkIcon.setSelected(false);
                 }
-            };
-        }
+                holder.setText(R.id.directory_name_text, params.name);
+                holder.setText(R.id.photo_count_text, params.photoList != null ? params.photoList.size() + "张" : "0张");
+                ImageLoaderManager.getInstance().displayImage(Uri.fromFile(new File(params.thumbPath)).toString(), photo);
+
+                holder.getContentView().setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        checkIcon.setSelected(true);
+                        selectedDirectionIndex = holder.getPosition();
+                        if (listener != null) {
+                            listener.onPhotoListItemClick(selectedDirectionIndex,
+                                    photoDirectories.get(selectedDirectionIndex));
+                        }
+                    }
+                });
+            }
+        };
         photoList.setAdapter(directoryAdapter);
     }
 
-    public void setOnItemPhotoListClickListener(OnItemPhotoListClickListener listener) {
+    public void setOnPhotoListItemClickListener(OnPhotoListItemClickListener listener) {
         this.listener = listener;
     }
 
-    public interface OnItemPhotoListClickListener {
-        void onItemPhotoListClick(int directoryIndex);
+    public void setOnViewCreatedListener(OnViewCreatedListener listener) {
+        setOnViewCreatedListener(0, listener);
+    }
+
+    /**
+     * 监听Fragment中View的加载，用于自定义View样式
+     * @param itemLayoutResId 自定义的相册列表子布局
+     * @param listener 监听Fragment中View的加载，用于修改ListView的样式
+     */
+    public void setOnViewCreatedListener(@LayoutRes int itemLayoutResId, OnViewCreatedListener listener) {
+        if (itemLayoutResId != 0) {
+            this.itemLayoutResId = itemLayoutResId;
+        }
+        this.viewCreatedListener = listener;
     }
 }

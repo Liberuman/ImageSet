@@ -13,11 +13,11 @@
         android:id="@+id/check_box"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="15dp"
-        android:paddingBottom="15dp"
-        android:paddingTop="4dp"
-        android:paddingRight="4dp"
+        android:paddingLeft="16dp"
+        android:paddingBottom="16dp"
+        android:paddingTop="8dp"
+        android:paddingRight="8dp"
         android:layout_gravity="right"
         android:transitionName="Preview123"
-        android:src="@drawable/place_checkbox_bg"/>
+        android:src="@drawable/grid_checkbox_bg"/>
 </FrameLayout>
